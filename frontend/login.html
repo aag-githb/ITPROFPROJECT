@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ITClassroom</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="brand" href="#top"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <nav aria-label="Main">
+      <a href="#subjects">Subjects</a>
+      <a href="#topics">Topics</a>
+      <a href="#rules">Quiz rules</a>
+      <a href="#login">Log in</a>
+    </nav>
+  </header>
+
+  <div class="grid" id="top">
+    <main>
+      <h1>Learn a topic, pass the quiz, move on.</h1>
+      <p class="lead">Read each lesson, take a timed quiz, and unlock the next topic when you score 75% or higher. Faculty can build lessons and quizzes right inside.</p>
+
+      <section id="subjects" aria-labelledby="h-sub">
+        <h2 id="h-sub">Your subjects</h2>
+        <div class="subjects">
+          <article class="subject">
+            <span class="code">CS 101</span>
+            <h3>Introduction to Computing</h3>
+            <dl><dt>Term</dt><dd>1st Semester</dd><dt>Year</dt><dd>2026–2027</dd></dl>
+            <div class="bar" role="img" aria-label="50% of topics passed"><i style="width:50%"></i></div>
+          </article>
+          <article class="subject">
+            <span class="code">MATH 102</span>
+            <h3>Discrete Mathematics</h3>
+            <dl><dt>Term</dt><dd>1st Semester</dd><dt>Year</dt><dd>2026–2027</dd></dl>
+            <div class="bar" role="img" aria-label="17% of topics passed"><i style="width:17%"></i></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="topics" aria-labelledby="h-top">
+        <h2 id="h-top">Introduction to Computing: topics</h2>
+        <ol class="toc">
+          <li><span class="n">1</span><div class="t"><strong>What is a computer?</strong><span>Text, slides and summary</span></div><span class="pill pass">Passed 90%</span></li>
+          <li><span class="n">2</span><div class="t"><strong>Hardware and software</strong><span>Text, slides and summary</span></div><span class="pill pass">Passed 80%</span></li>
+          <li><span class="n">3</span><div class="t"><strong>Number systems</strong><span>Quiz ready: 20 items, 10 minutes</span></div><span class="pill open">Start quiz</span></li>
+          <li class="locked"><span class="n">4</span><div class="t"><strong>Networks and the internet</strong><span>Pass topic 3 to unlock</span></div><span class="pill lock">Locked</span></li>
+          <li class="locked"><span class="n">5</span><div class="t"><strong>Data and privacy</strong><span>Pass topic 4 to unlock</span></div><span class="pill lock">Locked</span></li>
+          <li class="locked"><span class="n">6</span><div class="t"><strong>Review and summary</strong><span>Pass topic 5 to unlock</span></div><span class="pill lock">Locked</span></li>
+        </ol>
+      </section>
+
+      <section id="rules" aria-labelledby="h-rules">
+        <h2 id="h-rules">How quizzes work</h2>
+        <ul class="rules">
+          <li><b>75%</b>Passing score to unlock the next topic</li>
+          <li><b>10 min</b>Time limit, up to 20 questions</li>
+          <li><b>Retake</b>Failed a quiz? Repeat the topic, then try again</li>
+        </ul>
+      </section>
+    </main>
+
+    <aside class="panel" id="login" aria-label="Account">
+      <input type="radio" name="tab" id="t-login" checked>
+      <input type="radio" name="tab" id="t-reg">
+      <div class="tabs">
+        <label for="t-login">Log in</label>
+        <label for="t-reg">Register</label>
+      </div>
+
+      <form class="form f-login" action="#" method="post">
+        <h2>Welcome back</h2>
+        <p class="sub">Log in to continue your lessons.</p>
+        <label class="field"><span>Username</span><input type="text" name="username" autocomplete="username" required></label>
+        <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" required></label>
+        <button class="btn" type="submit">Log in</button>
+        <p class="alt">New here? Choose <b>Register</b> above.</p>
+      </form>
+
+      <form class="form f-reg" action="#" method="post">
+        <h2>Create your account</h2>
+        <p class="sub">Students and faculty both start here.</p>
+        <label class="field"><span>I am a</span>
+          <select name="role"><option>Student</option><option>Faculty</option></select>
+        </label>
+        <label class="field"><span>Username</span><input type="text" name="new-username" autocomplete="username" required></label>
+        <label class="field"><span>Password</span><input type="password" name="new-password" autocomplete="new-password" required></label>
+        <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy">privacy policy</a>.</span></label>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+    </aside>
+  </div>
+
+  <footer id="privacy">
+    <span>© 2026</span>
+    <nav aria-label="Footer"><a href="#privacy">Privacy</a><a href="#login">Faculty</a></nav>
+  </footer>
+
+</div>
+</body>
+</html>

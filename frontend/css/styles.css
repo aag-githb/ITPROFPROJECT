@@ -1,0 +1,153 @@
+/* =========================================================
+   Lumen – universal stylesheet
+   Palette: Periwinkle, Hyper Magenta, Ultrasonic Blue,
+            Velvet Purple, Black
+   ========================================================= */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap");
+
+/* ---------- Tokens ---------- */
+:root{
+  --periwinkle:#E3D9FC;
+  --magenta:#BF40FA;
+  --blue:#4928C2;
+  --velvet:#5B2A62;
+  --black:#040607;
+
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;
+  min-height:100%;
+  font-family:var(--sans);
+  color:var(--periwinkle);
+  line-height:1.55;
+  background:
+    radial-gradient(ellipse 60% 50% at 8% 12%,rgba(73,40,194,.75),transparent 70%),
+    radial-gradient(ellipse 45% 40% at 95% 75%,rgba(191,64,250,.38),transparent 70%),
+    radial-gradient(ellipse 50% 45% at 40% 100%,rgba(91,42,98,.7),transparent 70%),
+    var(--black);
+  background-attachment:fixed;
+}
+a{color:inherit}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.4rem,5.4vw,4.2rem);line-height:1.05;margin:0 0 18px;letter-spacing:-.02em}
+h2{font-family:var(--serif);font-weight:500;font-size:1.5rem;margin:0 0 16px}
+.lead{max-width:52ch;font-size:1.1rem;opacity:.85;margin:0 0 40px}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 64px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:48px;align-items:start}
+
+/* ---------- Header and footer ---------- */
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:56px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-weight:700;font-size:1.5rem;text-decoration:none}
+.star{
+  display:inline-block;width:34px;height:34px;background:var(--magenta);
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);
+}
+nav{display:flex;gap:22px;font-size:.95rem}
+nav a{text-decoration:none;opacity:.8}
+nav a:hover,nav a:focus-visible{opacity:1;text-decoration:underline;text-underline-offset:4px}
+
+footer{
+  margin-top:64px;padding-top:20px;border-top:1px solid rgba(227,217,252,.18);
+  display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-size:.88rem;opacity:.75;
+}
+footer nav{gap:18px}
+
+/* ---------- Subject cards ---------- */
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:44px}
+.subject{background:var(--blue);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:6px}
+.subject:nth-child(2){background:var(--velvet)}
+.subject h3{font-family:var(--serif);font-size:1.25rem;margin:0;line-height:1.2}
+.subject .code{color:var(--periwinkle);font-weight:700;font-size:.9rem}
+.subject dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0 0;font-size:.88rem}
+.subject dt{opacity:.7}
+.subject dd{margin:0}
+
+/* ---------- Progress bar ---------- */
+.bar{height:8px;border-radius:8px;background:rgba(4,6,7,.45);overflow:hidden;margin-top:12px}
+.bar i{display:block;height:100%;background:var(--periwinkle);border-radius:8px}
+
+/* ---------- Topic list (table of contents) ---------- */
+.toc{list-style:none;margin:0 0 44px;padding:0;display:grid;gap:10px}
+.toc li{
+  display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;
+  background:rgba(4,6,7,.55);border:1px solid rgba(227,217,252,.14);border-radius:18px;padding:12px 16px;
+}
+.toc .n{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  font-family:var(--serif);font-weight:700;background:var(--periwinkle);color:var(--blue);
+}
+.toc .t strong{display:block;font-weight:500}
+.toc .t span{font-size:.85rem;opacity:.7}
+.toc li.locked{opacity:.6}
+
+/* ---------- Status pills ---------- */
+.pill{font-size:.8rem;font-weight:700;padding:5px 12px;border-radius:99px}
+.pill.pass{background:var(--periwinkle);color:var(--blue)}
+.pill.open{background:var(--magenta);color:var(--black)}
+.pill.lock{border:1px solid rgba(227,217,252,.35);opacity:.7}
+
+/* ---------- Quiz rules ---------- */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:0;padding:0;list-style:none}
+.rules li{border-left:3px solid var(--magenta);padding:2px 0 2px 14px;font-size:.95rem}
+.rules b{display:block;font-family:var(--serif);font-size:1.6rem;font-weight:700}
+
+/* ---------- Account panel (CSS-only tabs) ---------- */
+.panel{
+  position:sticky;top:20px;background:var(--periwinkle);color:var(--black);
+  border-radius:28px;padding:26px;box-shadow:0 30px 80px rgba(73,40,194,.45);
+}
+.panel input[type=radio]{position:absolute;opacity:0;pointer-events:none}
+.panel h2{color:var(--blue);margin-bottom:4px}
+.panel p.sub{margin:0 0 18px;font-size:.92rem;color:var(--velvet)}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:rgba(73,40,194,.12);border-radius:99px;padding:4px;margin-bottom:22px}
+.tabs label{text-align:center;padding:9px;border-radius:99px;cursor:pointer;font-weight:700;font-size:.95rem;color:var(--blue)}
+#t-login:checked ~ .tabs label[for=t-login],
+#t-reg:checked ~ .tabs label[for=t-reg]{background:var(--blue);color:var(--periwinkle)}
+#t-login:focus-visible ~ .tabs label[for=t-login],
+#t-reg:focus-visible ~ .tabs label[for=t-reg]{outline:3px solid var(--magenta);outline-offset:2px}
+
+.form{display:none}
+#t-login:checked ~ .f-login,
+#t-reg:checked ~ .f-reg{display:block}
+
+/* ---------- Form controls ---------- */
+.field{display:block;margin-bottom:14px}
+.field span{display:block;font-size:.85rem;font-weight:700;margin-bottom:5px;color:var(--velvet)}
+.field input,.field select{
+  width:100%;font:inherit;padding:12px 14px;border-radius:14px;
+  border:2px solid transparent;background:#fff;color:var(--black);
+}
+.field input:focus-visible,.field select:focus-visible{outline:none;border-color:var(--magenta);box-shadow:0 0 0 4px rgba(191,64,250,.25)}
+
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;margin:4px 0 18px;color:var(--velvet)}
+.check input{margin-top:3px;accent-color:var(--blue);width:16px;height:16px}
+.check a{color:var(--blue);font-weight:700}
+
+.btn{
+  width:100%;font:inherit;font-weight:700;border:0;cursor:pointer;padding:14px;
+  border-radius:16px;background:var(--blue);color:var(--periwinkle);transition:background .2s;
+}
+.btn:hover{background:var(--velvet)}
+.btn:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
+.alt{text-align:center;font-size:.88rem;margin:14px 0 0;color:var(--velvet)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:860px){
+  .grid{grid-template-columns:1fr;gap:36px}
+  .panel{position:static;order:-1}
+  nav{display:none}
+  header{margin-bottom:32px}
+}
