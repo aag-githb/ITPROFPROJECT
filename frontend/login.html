@@ -5,12 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ITClassroom</title>
 <link rel="stylesheet" href="css/styles.css">
-<style>
-  .idbox { display:flex; align-items:center; gap:.4rem; }
-  .idbox input { width:auto; min-width:0; text-align:center; }
-  .idbox .y { flex:0 0 4.2em; }
-  .idbox .n { flex:0 0 5.5em; }
-</style>
+<link rel="stylesheet" href="css/pages.css">
 </head>
 <body>
 <div class="wrap">
@@ -80,15 +75,21 @@
 
       <form class="form f-login" id="login-form">
         <h2>Welcome back</h2>
-        <p id="login-error" style="color:#b00020"></p>
+        <p class="msg" id="login-error"></p>
         <p class="sub">Log in to continue your lessons.</p>
-        <label class="field"><span>ID number</span>
+        <label class="field"><span>I am a</span>
+          <select name="role"><option value="student">Student</option><option value="faculty">Faculty</option></select>
+        </label>
+        <label class="field" data-for="id"><span>ID number</span>
           <div class="idbox">
             <b>TUPT-</b>
-            <input class="y" name="id1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <input class="y" name="id1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required data-digits>
             <b>-</b>
-            <input class="n" name="id2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <input class="n" name="id2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required data-digits>
           </div>
+        </label>
+        <label class="field" data-for="name" hidden><span>Name</span>
+          <input name="name" autocomplete="name" placeholder="Juan Dela Cruz" required disabled>
         </label>
         <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn" type="submit">Log in</button>
@@ -97,18 +98,21 @@
 
       <form class="form f-reg" id="reg-form">
         <h2>Create your account</h2>
-        <p id="reg-error" style="color:#b00020"></p>
+        <p class="msg" id="reg-error"></p>
         <p class="sub">Students and faculty both start here.</p>
         <label class="field"><span>I am a</span>
           <select name="role"><option value="student">Student</option><option value="faculty">Faculty</option></select>
         </label>
-        <label class="field"><span>ID number</span>
+        <label class="field" data-for="id"><span>ID number</span>
           <div class="idbox">
             <b>TUPT-</b>
-            <input class="y" name="rid1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <input class="y" name="rid1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required data-digits>
             <b>-</b>
-            <input class="n" name="rid2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <input class="n" name="rid2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required data-digits>
           </div>
+        </label>
+        <label class="field" data-for="name" hidden><span>Name</span>
+          <input name="rname" autocomplete="name" placeholder="Juan Dela Cruz" required disabled>
         </label>
         <label class="field"><span>Password</span><input type="password" name="new-password" autocomplete="new-password" required></label>
         <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy">privacy policy</a>.</span></label>
@@ -124,5 +128,6 @@
 
 </div>
 <script src="js/auth.js"></script>
+<script src="js/idswitch.js"></script>
 </body>
 </html>

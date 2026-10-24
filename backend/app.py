@@ -1,4 +1,3 @@
-
 from flask import Flask, request, session, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -26,6 +25,9 @@ users = db["users"]
 
 users.create_index("username", unique=True)
 
+# Roles people can pick when they register. "admin" (or anything else) is never allowed here.
+SELF_REGISTER_ROLES = ("student", "faculty")
+
 
 @app.post("/api/register")
 def register():
@@ -33,15 +35,14 @@ def register():
 
     username = d.get("username", "").strip()
     password = d.get("password", "")
-    role = d.get("role", "student").lower()
+    role = str(d.get("role", "student")).lower()
 
     if not username or not isinstance(password, str) or len(password) < 6:
         return jsonify(
             error="Username required, password at least 6 characters"
         ), 400
 
-    # Prevent users from registering as administrators.
-    if role != "student":
+    if role not in SELF_REGISTER_ROLES:
         return jsonify(error="Invalid role"), 400
 
     try:
@@ -51,7 +52,7 @@ def register():
                 password.encode("utf-8"),
                 bcrypt.gensalt()
             ),
-            "role": "student"
+            "role": role
         })
     except DuplicateKeyError:
         return jsonify(error="Username taken"), 409

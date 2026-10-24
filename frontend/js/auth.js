@@ -10,11 +10,17 @@ async function api(path, data) {
   return { ok: res.ok, body: await res.json() };
 }
 
+// Students sign in with their ID number (TUPT-YY-NNNN); faculty use their name.
+function identifier(f, role, year, num, name) {
+  if (role === "faculty") return f[name].value.trim();
+  return `TUPT-${f[year].value}-${f[num].value}`;
+}
+
 document.getElementById("login-form")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const f = e.target;
   const r = await api("/login", {
-    username: `TUPT-${f.id1.value}-${f.id2.value}`,
+    username: identifier(f, f.role.value, "id1", "id2", "name"),
     password: f.password.value,
   });
   if (r.ok) location.href = "subjects.html";
@@ -26,7 +32,7 @@ document.getElementById("reg-form")?.addEventListener("submit", async (e) => {
   const f = e.target;
   const r = await api("/register", {
     role: f.role.value,
-    username: `TUPT-${f.rid1.value}-${f.rid2.value}`,
+    username: identifier(f, f.role.value, "rid1", "rid2", "rname"),
     password: f["new-password"].value,
   });
   if (r.ok) location.href = "subjects.html";

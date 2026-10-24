@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topics | ITClassroom</title>
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <a class="brand" href="subjects.html"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <div class="who">
+      <span id="who">Loading...</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <p class="crumbs"><a href="subjects.html">Subjects</a> / <span id="crumb">Topics</span></p>
+    <h1 id="title">Topics</h1>
+    <p class="meta" id="meta"></p>
+    <p class="msg" id="list-msg" role="alert"></p>
+
+    <!-- Faculty only -->
+    <section class="add" id="add-box">
+      <h2>Add a topic</h2>
+      <p class="msg" id="msg" role="alert"></p>
+      <form id="add-form">
+        <label class="field"><span>Topic title</span><input name="title" required></label>
+        <button class="btn" type="submit">Add topic</button>
+      </form>
+    </section>
+
+    <ul class="toc" id="list"></ul>
+    <p class="empty" id="empty" hidden></p>
+  </main>
+
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/toc.js"></script>
+</body>
+</html>
