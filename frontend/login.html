@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ITClassroom</title>
 <link rel="stylesheet" href="css/styles.css">
+<style>
+  .idbox { display:flex; align-items:center; gap:.4rem; }
+  .idbox input { width:auto; min-width:0; text-align:center; }
+  .idbox .y { flex:0 0 4.2em; }
+  .idbox .n { flex:0 0 5.5em; }
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -72,22 +78,38 @@
         <label for="t-reg">Register</label>
       </div>
 
-      <form class="form f-login" action="#" method="post">
+      <form class="form f-login" id="login-form">
         <h2>Welcome back</h2>
+        <p id="login-error" style="color:#b00020"></p>
         <p class="sub">Log in to continue your lessons.</p>
-        <label class="field"><span>Username</span><input type="text" name="username" autocomplete="username" required></label>
+        <label class="field"><span>ID number</span>
+          <div class="idbox">
+            <b>TUPT-</b>
+            <input class="y" name="id1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <b>-</b>
+            <input class="n" name="id2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required oninput="this.value=this.value.replace(/\D/g,'')">
+          </div>
+        </label>
         <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" required></label>
         <button class="btn" type="submit">Log in</button>
         <p class="alt">New here? Choose <b>Register</b> above.</p>
       </form>
 
-      <form class="form f-reg" action="#" method="post">
+      <form class="form f-reg" id="reg-form">
         <h2>Create your account</h2>
+        <p id="reg-error" style="color:#b00020"></p>
         <p class="sub">Students and faculty both start here.</p>
         <label class="field"><span>I am a</span>
-          <select name="role"><option>Student</option><option>Faculty</option></select>
+          <select name="role"><option value="student">Student</option><option value="faculty">Faculty</option></select>
         </label>
-        <label class="field"><span>Username</span><input type="text" name="new-username" autocomplete="username" required></label>
+        <label class="field"><span>ID number</span>
+          <div class="idbox">
+            <b>TUPT-</b>
+            <input class="y" name="rid1" inputmode="numeric" maxlength="2" pattern="\d{2}" placeholder="22" required oninput="this.value=this.value.replace(/\D/g,'')">
+            <b>-</b>
+            <input class="n" name="rid2" inputmode="numeric" maxlength="4" pattern="\d{4}" placeholder="0123" required oninput="this.value=this.value.replace(/\D/g,'')">
+          </div>
+        </label>
         <label class="field"><span>Password</span><input type="password" name="new-password" autocomplete="new-password" required></label>
         <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy">privacy policy</a>.</span></label>
         <button class="btn" type="submit">Create account</button>
@@ -101,5 +123,6 @@
   </footer>
 
 </div>
+<script src="js/auth.js"></script>
 </body>
 </html>

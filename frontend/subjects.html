@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subjects | ITClassroom</title>
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; }
+  .who { display:flex; align-items:center; gap:.75rem; }
+  .add { margin:1.5rem 0; display:none; }
+  .add form { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.75rem; align-items:end; }
+  .empty { opacity:.7; }
+  #msg { color:#b00020; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="subjects.html"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <div class="who">
+      <span id="who">Loading...</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <h1>Your subjects</h1>
+
+    <section class="add" id="add-box">
+      <h2>Add a subject</h2>
+      <p id="msg"></p>
+      <form id="add-form">
+        <label class="field"><span>Name</span><input name="name" required></label>
+        <label class="field"><span>Code</span><input name="code" required></label>
+        <label class="field"><span>Term / Semester</span>
+          <select name="term"><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select>
+        </label>
+        <label class="field"><span>Year</span><input name="year" placeholder="2026–2027" required></label>
+        <button class="btn" type="submit">Add subject</button>
+      </form>
+    </section>
+
+    <div class="subjects" id="list"></div>
+    <p class="empty" id="empty" hidden>No subjects yet.</p>
+  </main>
+
+</div>
+
+<script src="js/auth.js"></script>
+<script>
+  const list = document.getElementById("list");
+
+  function el(tag, text, cls) {
+    const e = document.createElement(tag);
+    if (text !== undefined) e.textContent = text;
+    if (cls) e.className = cls;
+    return e;
+  }
+
+  function card(s) {
+    const a = el("article", undefined, "subject");
+    a.append(el("span", s.code, "code"), el("h3", s.name));
+    const dl = el("dl");
+    dl.append(el("dt", "Term"), el("dd", s.term), el("dt", "Year"), el("dd", s.year));
+    const bar = el("div", undefined, "bar");
+    const i = el("i"); i.style.width = "0%";
+    bar.append(i);
+    a.append(dl, bar);
+    return a;
+  }
+
+  async function loadSubjects() {
+    const r = await api("/subjects");
+    list.replaceChildren(...r.body.map(card));
+    document.getElementById("empty").hidden = r.body.length > 0;
+  }
+
+  api("/me").then(r => {
+    if (!r.ok) { location.href = "login.html"; return; }
+    document.getElementById("who").textContent = r.body.username + " (" + r.body.role + ")";
+    if (r.body.role === "faculty") document.getElementById("add-box").style.display = "block";
+    loadSubjects();
+  });
+
+  document.getElementById("add-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target;
+    const r = await api("/subjects", {
+      name: f.name.value, code: f.code.value, term: f.term.value, year: f.year.value,
+    });
+    document.getElementById("msg").textContent = r.ok ? "" : r.body.error;
+    if (r.ok) { f.reset(); loadSubjects(); }
+  });
+
+  document.getElementById("logout").onclick = async () => {
+    await api("/logout", {});
+    location.href = "login.html";
+  };
+</script>
+</body>
+</html>
