@@ -1,29 +1,146 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Subjects | ITClassroom</title>
-<link rel="stylesheet" href="css/styles.css">
-<style>
-  .topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; }
-  .who { display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; }
-  .head { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
-  .add { margin:1.5rem 0; display:none; }
-  .add form { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.75rem; align-items:end; }
-  .subjects { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1rem; margin-top:1rem; }
-  a.subject { display:block; color:inherit; text-decoration:none; }
-  a.subject:focus-visible { outline:3px solid currentColor; outline-offset:3px; }
-  .progress-label { display:flex; justify-content:space-between; font-size:.85rem; opacity:.75; margin-top:.75rem; }
-  .empty { opacity:.7; }
-  .msg { color:#b00020; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subjects | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .who {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .add {
+      margin: 1.5rem 0;
+      display: none;
+    }
+
+    .add form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: .9rem;
+      align-items: end;
+    }
+
+    .subjects {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    a.subject {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      padding: 1.25rem;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 12px;
+    }
+
+    a.subject:hover {
+      transform: translateY(-2px);
+    }
+
+    a.subject:focus-visible {
+      outline: 3px solid currentColor;
+      outline-offset: 3px;
+    }
+
+    .subject .code {
+      display: inline-block;
+      font-size: .8rem;
+      opacity: .75;
+      margin-bottom: .5rem;
+    }
+
+    .subject h3 {
+      margin: .25rem 0 .75rem;
+    }
+
+    .subject dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .4rem .75rem;
+      font-size: .9rem;
+    }
+
+    .subject dt {
+      opacity: .7;
+    }
+
+    .subject dd {
+      margin: 0;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .msg {
+      color: #b00020;
+    }
+
+    .empty {
+      opacity: .7;
+    }
+
+    .add button {
+      min-height: 42px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .85rem;
+      opacity: .75;
+      margin-top: .75rem;
+    }
+
+    .bar {
+      height: 6px;
+      background: #ddd;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: #4b8b68;
+    }
+  </style>
 </head>
+
 <body>
 <div class="wrap">
 
   <header class="topbar">
-    <a class="brand" href="subjects.html"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <a class="brand" href="subjects.html">
+      <span class="star" aria-hidden="true"></span>ITClassroom
+    </a>
+
     <div class="who">
       <span id="who">Loading...</span>
       <button class="btn" id="logout" type="button">Log out</button>
@@ -34,19 +151,55 @@
     <div class="head">
       <h1>Your subjects</h1>
     </div>
+
     <p class="msg" id="list-msg" role="alert"></p>
 
-    <!-- Faculty only: Name, Code, Term / Semester, Year (per whiteboard step 2) -->
+    <!-- Faculty only -->
     <section class="add" id="add-box">
       <h2>Add a subject</h2>
       <p class="msg" id="msg" role="alert"></p>
+
       <form id="add-form">
-        <label class="field"><span>Name</span><input name="name" required></label>
-        <label class="field"><span>Code</span><input name="code" required></label>
-        <label class="field"><span>Term / Semester</span>
-          <select name="term"><option>1st Semester</option><option>2nd Semester</option><option>Summer</option></select>
+        <label class="field">
+          <span>Subject Name</span>
+          <input name="name" maxlength="150" required>
         </label>
-        <label class="field"><span>Year</span><input name="year" placeholder="2026–2027" required></label>
+
+        <label class="field">
+          <span>Subject Code</span>
+          <input name="code" maxlength="30" required>
+        </label>
+
+        <label class="field">
+          <span>Term / Semester</span>
+          <select name="term" required>
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+            <option value="Summer">Summer</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Year Level</span>
+          <select name="year_level" required>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Academic Year</span>
+          <input
+            name="academic_year"
+            placeholder="2026-2027"
+            pattern="[0-9]{4}-[0-9]{4}"
+            title="Use the format 2026-2027"
+            required
+          >
+        </label>
+
         <button class="btn" type="submit">Add subject</button>
       </form>
     </section>
@@ -59,79 +212,168 @@
 
 <script src="js/auth.js"></script>
 <script>
- const list = document.getElementById("list");
-const emptyEl = document.getElementById("empty");
-let role = "";
+  const list = document.getElementById("list");
+  const emptyEl = document.getElementById("empty");
+  const listMsg = document.getElementById("list-msg");
+  const form = document.getElementById("add-form");
 
-function el(tag, text, cls) {
-  const e = document.createElement(tag);
-  if (text !== undefined) e.textContent = text;
-  if (cls) e.className = cls;
-  return e;
-}
+  let role = "";
 
-// Each card opens the Table of Contents / list of topics (toc.html)
-function card(s) {
-  const a = el("a", undefined, "subject");
-  a.href = "toc.html?subject=" + encodeURIComponent(s.id);
-  a.setAttribute("aria-label", "Open " + s.name);
-  a.append(el("span", s.code, "code"), el("h3", s.name));
-
-  const dl = el("dl");
-  dl.append(el("dt", "Term"), el("dd", s.term), el("dt", "Year"), el("dd", s.year));
-
-  // Progress = share of topics passed (quiz 75%+). Shows 0% if the API doesn't send it yet.
-  const pct = Math.max(0, Math.min(100, Number(s.progress) || 0));
-  const bar = el("div", undefined, "bar");
-  const i = el("i"); i.style.width = pct + "%";
-  bar.append(i);
-
-  a.append(dl, bar);
-  if (role === "student") {
-    const lbl = el("div", undefined, "progress-label");
-    lbl.append(el("span", "Progress"), el("span", pct + "%"));
-    a.append(lbl);
+  function el(tag, text, cls) {
+    const e = document.createElement(tag);
+    if (text !== undefined) e.textContent = text;
+    if (cls) e.className = cls;
+    return e;
   }
-  return a;
-}
 
-async function loadSubjects() {
-  const r = await api("/subjects");
-  const msg = document.getElementById("list-msg");
-  if (!r.ok) {
-    msg.textContent = (r.body && r.body.error) || "Couldn't load your subjects. Refresh the page to try again.";
-    return;
+  function card(s) {
+    const a = el("a", undefined, "subject");
+    a.href = "toc.html?subject=" + encodeURIComponent(s.id);
+    a.setAttribute("aria-label", "Open " + s.name);
+
+    a.append(
+      el("span", s.code, "code"),
+      el("h3", s.name)
+    );
+
+    const dl = el("dl");
+
+    const fields = [
+      ["Term / Semester", s.term],
+      ["Year Level", s.year_level],
+      ["Academic Year", s.academic_year]
+    ];
+
+    fields.forEach(([label, value]) => {
+      dl.append(
+        el("dt", label),
+        el("dd", value || "Not set")
+      );
+    });
+
+    a.append(dl);
+
+    // Progress will be connected to actual quiz results later.
+    if (role === "student") {
+      const pct = Math.max(0, Math.min(100, Number(s.progress) || 0));
+
+      const bar = el("div", undefined, "bar");
+      const fill = el("i");
+      fill.style.width = pct + "%";
+      bar.append(fill);
+
+      const progress = el("div", undefined, "progress-label");
+      progress.append(
+        el("span", "Progress"),
+        el("span", pct + "%")
+      );
+
+      a.append(bar, progress);
+    }
+
+    return a;
   }
-  msg.textContent = "";
-  list.replaceChildren(...r.body.map(card));
-  emptyEl.textContent = role === "faculty"
-    ? "No subjects yet. Add your first subject above."
-    : "No subjects yet. Your faculty will add them here.";
-  emptyEl.hidden = r.body.length > 0;
-}
 
-api("/me").then(r => {
-  if (!r.ok) { location.href = "login.html"; return; }
-  role = r.body.role;
-  document.getElementById("who").textContent = r.body.username + " (" + role + ")";
-  if (role === "faculty") document.getElementById("add-box").style.display = "block";
-  loadSubjects();
-});
+  async function loadSubjects() {
+    listMsg.textContent = "";
+    list.replaceChildren();
+    emptyEl.hidden = true;
 
-document.getElementById("add-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const f = e.target;
-  const r = await api("/subjects", {
-    name: f.name.value.trim(), code: f.code.value.trim(), term: f.term.value, year: f.year.value.trim(),
+    try {
+      const r = await api("/subjects");
+
+      if (!r.ok) {
+        listMsg.textContent =
+          (r.body && r.body.error) ||
+          "Couldn't load your subjects. Refresh the page to try again.";
+        return;
+      }
+
+      const subjects = Array.isArray(r.body) ? r.body : [];
+
+      list.replaceChildren(...subjects.map(card));
+
+      emptyEl.textContent = role === "faculty"
+        ? "No subjects yet. Add your first subject above."
+        : "No subjects yet. Your faculty will add them here.";
+
+      emptyEl.hidden = subjects.length > 0;
+    } catch (err) {
+      listMsg.textContent =
+        "Unable to connect to the server. Check whether Flask is running.";
+    }
+  }
+
+  async function init() {
+    try {
+      const r = await api("/me");
+
+      if (!r.ok) {
+        location.href = "login.html";
+        return;
+      }
+
+      role = String(r.body.role || "").toLowerCase();
+
+      document.getElementById("who").textContent =
+        r.body.username + " (" + role + ")";
+
+      if (role === "faculty") {
+        document.getElementById("add-box").style.display = "block";
+      }
+
+      await loadSubjects();
+    } catch (err) {
+      listMsg.textContent = "Unable to connect to the server.";
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const button = form.querySelector('button[type="submit"]');
+    const msg = document.getElementById("msg");
+
+    const data = {
+      name: form.elements["name"].value.trim(),
+      code: form.elements["code"].value.trim(),
+      term: form.elements["term"].value,
+      year_level: form.elements["year_level"].value,
+      academic_year: form.elements["academic_year"].value.trim()
+    };
+
+    if (Object.values(data).some(value => !value)) {
+      msg.textContent = "Please complete all fields.";
+      return;
+    }
+
+    button.disabled = true;
+    msg.textContent = "";
+
+    try {
+      const r = await api("/subjects", data);
+
+      if (!r.ok) {
+        msg.textContent =
+          (r.body && r.body.error) || "Couldn't add the subject.";
+        return;
+      }
+
+      form.reset();
+      await loadSubjects();
+    } catch (err) {
+      msg.textContent = "Unable to connect to the server.";
+    } finally {
+      button.disabled = false;
+    }
   });
-  document.getElementById("msg").textContent = r.ok ? "" : ((r.body && r.body.error) || "Couldn't add the subject.");
-  if (r.ok) { f.reset(); loadSubjects(); }
-});
 
-document.getElementById("logout").onclick = async () => {
-  await api("/logout", {});
-  location.href = "login.html";
-};
+  document.getElementById("logout").addEventListener("click", async () => {
+    await api("/logout", {});
+    location.href = "login.html";
+  });
+
+  init();
 </script>
 </body>
 </html>

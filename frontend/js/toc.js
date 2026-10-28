@@ -59,7 +59,9 @@ async function loadTopics() {
     document.title = s.name + " | ITClassroom";
     document.getElementById("title").textContent = s.name;
     document.getElementById("crumb").textContent = s.code;
-    document.getElementById("meta").textContent = s.code + " · " + s.term + " · " + s.year;
+    document.getElementById("meta").textContent =
+     s.code + " · " + s.term + " · " +
+     s.year_level + " · AY " + s.academic_year;
   }
   const topics = r.body.topics || [];
   list.replaceChildren(...topics.map(row));
