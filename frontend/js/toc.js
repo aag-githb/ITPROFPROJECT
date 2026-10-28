@@ -1,93 +1,184 @@
+
 const params = new URLSearchParams(location.search);
 const subjectId = params.get("subject");
+
 const list = document.getElementById("list");
 const emptyEl = document.getElementById("empty");
-let role = "";
+const titleEl = document.getElementById("title");
+const crumbEl = document.getElementById("crumb");
+const metaEl = document.getElementById("meta");
+const form = document.getElementById("add-form");
+const input = form?.querySelector('input[name="title"]');
+const addBox = document.getElementById("add-box");
 
-if (!subjectId) location.href = "subjects.html";
+let currentRole = "";
 
-function el(tag, text, cls) {
-  const e = document.createElement(tag);
-  if (text !== undefined) e.textContent = text;
-  if (cls) e.className = cls;
-  return e;
+function el(tag, text = "", cls = "") {
+  const element = document.createElement(tag);
+  element.textContent = text;
+
+  if (cls) element.className = cls;
+
+  return element;
 }
 
-// A topic is open if it's the first one, the viewer is faculty, or the previous topic's quiz was passed (75%+).
-function row(t, idx, all) {
-  const isFaculty = role === "faculty";
-  const prevPassed = idx === 0 || all[idx - 1].status === "passed";
-  const locked = !isFaculty && !prevPassed;
+function showMessage(message, isError = false) {
+  const messageEl = document.getElementById("msg");
 
-  const li = el("li", undefined, locked ? "locked" : "");
-  const n = el("div", String(idx + 1), "n");
+  if (!messageEl) return;
 
-  const info = el("div", undefined, "t");
-  const strong = el("strong");
-  if (locked) {
-    strong.textContent = t.title;
-  } else {
-    const a = el("a", t.title);
-    a.href = "topic.html?id=" + encodeURIComponent(t.id) + "&subject=" + encodeURIComponent(subjectId);
-    strong.append(a);
+  messageEl.textContent = message;
+  messageEl.style.color = isError ? "#c62828" : "#237547";
+}
+
+function renderTopics(topics) {
+  list.replaceChildren();
+
+  if (!topics.length) {
+    emptyEl.hidden = false;
+    emptyEl.textContent = "No topics yet.";
+    return;
   }
-  info.append(strong);
-  if (locked) info.append(el("span", "Pass the quiz for topic " + idx + " to unlock this."));
-  else if (t.status === "failed") info.append(el("span", "Quiz not passed yet. Repeat the topic and try again."));
 
-  li.append(n, info);
-  if (!isFaculty) {
-    const score = t.score != null ? " \u00b7 " + t.score + "%" : "";
-    if (locked) li.append(el("span", "Locked", "pill lock"));
-    else if (t.status === "passed") li.append(el("span", "Passed" + score, "pill pass"));
-    else if (t.status === "failed") li.append(el("span", "Retake" + score, "pill open"));
-    else li.append(el("span", "Start", "pill open"));
-  }
-  return li;
+  emptyEl.hidden = true;
+
+  topics.forEach((topic, index) => {
+    const item = el("li", "", "topic-item");
+    const number = el("span", String(index + 1), "topic-number");
+    const details = el("div", "", "topic-details");
+    const topicTitle = el("h3", topic.title || "Untitled Topic");
+
+    const statusText =
+      topic.status === "passed"
+        ? "Passed"
+        : topic.status === "failed"
+        ? "Retake required"
+        : "Not started";
+
+    const status = el("p", statusText, "topic-status");
+    details.append(topicTitle, status);
+
+    const destination =
+  currentRole === "faculty" ? "topic-editor.html" : "topic-view.html";
+
+const openLink = el("a", "Open Topic", "topic-link");
+openLink.href =
+  `${destination}?id=${encodeURIComponent(topic.id)}` +
+  `&subject=${encodeURIComponent(subjectId)}`;
+
+    item.append(number, details, openLink);
+    list.append(item);
+  });
 }
 
 async function loadTopics() {
-  const r = await api("/subjects/" + encodeURIComponent(subjectId) + "/topics");
-  const msg = document.getElementById("list-msg");
-  if (!r.ok) {
-    msg.textContent = (r.body && r.body.error) || "Couldn't load the topics. Refresh the page to try again.";
-    return;
+  try {
+    const result = await api(`/subjects/${encodeURIComponent(subjectId)}/topics`);
+
+    if (!result.ok) {
+      throw new Error(
+        result.body?.error || "Unable to load topics."
+      );
+    }
+
+    const response = result.body;
+    const subject = response?.subject;
+    const topics = response?.topics || [];
+
+    if (!subject) {
+      throw new Error("Subject information is missing from the API response.");
+    }
+
+    titleEl.textContent = subject.name || "Topics";
+    crumbEl.textContent = subject.name || "Subject";
+
+    metaEl.textContent = [
+      subject.code,
+      subject.term,
+      subject.year_level,
+      subject.academic_year ? `AY ${subject.academic_year}` : ""
+    ].filter(Boolean).join(" · ");
+
+    renderTopics(topics);
+  } catch (error) {
+    console.error("Failed to load topics:", error);
+    list.replaceChildren();
+    emptyEl.hidden = false;
+    emptyEl.textContent = error.message || "Unable to load topics.";
   }
-  msg.textContent = "";
-  const s = r.body.subject;
-  if (s) {
-    document.title = s.name + " | ITClassroom";
-    document.getElementById("title").textContent = s.name;
-    document.getElementById("crumb").textContent = s.code;
-    document.getElementById("meta").textContent =
-     s.code + " · " + s.term + " · " +
-     s.year_level + " · AY " + s.academic_year;
-  }
-  const topics = r.body.topics || [];
-  list.replaceChildren(...topics.map(row));
-  emptyEl.textContent = role === "faculty"
-    ? "No topics yet. Add the first topic above."
-    : "No topics yet. Your faculty will add them here.";
-  emptyEl.hidden = topics.length > 0;
 }
 
-api("/me").then(r => {
-  if (!r.ok) { location.href = "login.html"; return; }
-  role = r.body.role;
-  document.getElementById("who").textContent = r.body.username + " (" + role + ")";
-  if (role === "faculty") document.getElementById("add-box").style.display = "block";
-  loadTopics();
-});
+async function initializePage() {
+  if (!subjectId) {
+    location.href = "subjects.html";
+    return;
+  }
 
-document.getElementById("add-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const f = e.target;
-  const r = await api("/subjects/" + encodeURIComponent(subjectId) + "/topics", { title: f.title.value.trim() });
-  document.getElementById("msg").textContent = r.ok ? "" : ((r.body && r.body.error) || "Couldn't add the topic.");
-  if (r.ok) { f.reset(); loadTopics(); }
-});
+  try {
+    const result = await api("/me");
 
-document.getElementById("logout").onclick = async () => {
-  await api("/logout", {});
-  location.href = "login.html";
-};
+    if (!result.ok) {
+      location.href = "login.html";
+      return;
+    }
+
+    const user = result.body;
+    currentRole = String(user.role || "").trim().toLowerCase();
+
+    // Show the entire Add a Topic section to faculty only.
+    if (addBox) {
+      const isFaculty = currentRole === "faculty";
+      addBox.hidden = !isFaculty;
+      addBox.style.display = isFaculty ? "block" : "none";
+    }
+
+    await loadTopics();
+  } catch (error) {
+    console.error("Failed to initialize topics page:", error);
+    emptyEl.hidden = false;
+    emptyEl.textContent = "Unable to verify your session. Please refresh the page.";
+  }
+}
+
+if (form) {
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (currentRole !== "faculty") {
+      showMessage("Only faculty members can add topics.", true);
+      return;
+    }
+
+    const title = input?.value.trim();
+
+    if (!title) {
+      showMessage("Please enter a topic title.", true);
+      return;
+    }
+
+    const submitButton = form.querySelector('[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+      const result = await api(
+        `/subjects/${encodeURIComponent(subjectId)}/topics`,
+        { title }
+      );
+
+      if (!result.ok) {
+        throw new Error(result.body?.error || "Unable to add topic.");
+      }
+
+      input.value = "";
+      showMessage("Topic added successfully.");
+      await loadTopics();
+    } catch (error) {
+      console.error("Failed to add topic:", error);
+      showMessage(error.message || "Unable to add topic.", true);
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  });
+}
+
+initializePage();

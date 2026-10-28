@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson editor | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/topic-editor.css">
+</head>
+<body>
+<a class="skip-link" href="#editor-main">Skip to editor</a>
+
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html">ITClassroom</a>
+    <div class="who">
+      <span id="who" aria-live="polite">Loading…</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="editor" id="editor-main">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a id="back-link" href="subjects.html">Back to topics</a>
+    </nav>
+
+    <h1>Lesson editor</h1>
+
+    <!-- Live region: the script can write save/upload results here -->
+    <p id="editor-message" role="status" aria-live="polite" aria-atomic="true"></p>
+
+    <label class="field" for="lesson-title">
+      <span>Topic title</span>
+      <input id="lesson-title" name="title" maxlength="200" required
+             autocomplete="off" aria-describedby="title-hint">
+      <small id="title-hint" class="muted">Up to 200 characters.</small>
+    </label>
+
+    <section class="editor-panel" aria-labelledby="content-heading">
+      <h2 id="content-heading">Lesson content</h2>
+
+      <div class="toolbar" role="toolbar" aria-label="Text formatting"
+           aria-controls="lesson-content">
+        <button type="button" data-command="bold"
+                aria-label="Bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button type="button" data-command="italic"
+                aria-label="Italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button type="button" data-command="insertUnorderedList"
+                title="Bulleted list">Bullets</button>
+        <button type="button" data-command="formatBlock" data-value="h2"
+                title="Turn the current line into a heading">Heading</button>
+      </div>
+
+      <div id="lesson-content" class="lesson-content"
+           contenteditable="true" role="textbox" aria-multiline="true"
+           aria-labelledby="content-heading"
+           data-placeholder="Write the lesson here…"></div>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="upload-heading">
+      <h2 id="upload-heading">Upload presentation</h2>
+      <p id="upload-hint">PDF, PPT, or PPTX. Maximum 25 MB per file.</p>
+
+      <form id="upload-form">
+        <label class="visually-hidden" for="presentation-file">
+          Presentation file
+        </label>
+        <input id="presentation-file" name="presentation" type="file"
+               accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+               required aria-describedby="upload-hint">
+        <button class="btn" type="submit">Upload file</button>
+      </form>
+
+      <ul id="presentation-list" aria-label="Uploaded presentations"></ul>
+      <p class="muted" id="presentation-empty" hidden>
+        No presentations uploaded yet.
+      </p>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="slides-heading">
+      <div class="section-heading">
+        <h2 id="slides-heading">Build your own slides</h2>
+        <button class="btn" id="add-slide" type="button"
+                aria-controls="slides">Add slide</button>
+      </div>
+      <div id="slides" aria-live="polite"></div>
+      <p class="muted" id="slides-empty">
+        No slides yet. Select “Add slide” to start.
+      </p>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Lesson summary</h2>
+
+      <label class="visually-hidden" for="lesson-summary">Lesson summary</label>
+      <textarea id="lesson-summary" name="summary" rows="5"
+                placeholder="Write the key ideas students should remember…"
+                aria-describedby="summary-hint"></textarea>
+
+      <button class="btn" id="generate-summary" type="button">
+        Generate summary draft
+      </button>
+      <p class="muted" id="summary-hint">
+        You can edit the generated draft before saving.
+      </p>
+    </section>
+
+    <div class="editor-actions">
+      <button class="btn" id="save-lesson" type="button">Save lesson</button>
+      <a class="btn" id="preview-link" href="#">Preview lesson</a>
+    </div>
+  </main>
+</div>
+
+<!-- defer: scripts load without blocking render, run in order -->
+<script src="js/auth.js" defer></script>
+<script src="js/topic-editor.js" defer></script>
+</body>
+</html>

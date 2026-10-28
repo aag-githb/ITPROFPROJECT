@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/topic-editor.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html">ITClassroom</a>
+    <div class="who">
+      <span id="who">Loading...</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="editor">
+    <p class="crumbs"><a id="back-link" href="subjects.html">Back</a></p>
+    <h1 id="view-title">Loading lesson...</h1>
+
+    <section class="editor-panel">
+      <h2>Lesson</h2>
+      <div id="view-content" class="lesson-content"></div>
+    </section>
+
+    <section class="editor-panel">
+      <h2>Presentation files</h2>
+      <ul id="view-presentations"></ul>
+    </section>
+
+    <section class="editor-panel">
+      <h2>Slides</h2>
+      <div id="view-slide" class="slide-preview"></div>
+      <div class="slide-controls">
+        <button class="btn" id="previous-slide" type="button">Previous</button>
+        <span id="slide-count"></span>
+        <button class="btn" id="next-slide" type="button">Next</button>
+      </div>
+    </section>
+
+    <section class="editor-panel">
+      <h2>Summary</h2>
+      <div id="view-summary"></div>
+    </section>
+  </main>
+</div>
+<script src="js/auth.js"></script>
+<script src="js/topic-view.js"></script>
+</body>
+</html>
