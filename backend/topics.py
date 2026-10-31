@@ -189,7 +189,7 @@ def init_topics(app, db):
                 clean_slides.append({
                     "title": str(slide.get("title", ""))[:300],
                     "text": str(slide.get("text", ""))[:10000],
-                    "image": str(slide.get("image", ""))[:2000],
+                    "image": str(slide.get("image", ""))[:4000000],
                 })
 
             updates["slides"] = clean_slides
