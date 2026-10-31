@@ -115,7 +115,7 @@
           <input name="rname" autocomplete="name" placeholder="Juan Dela Cruz" required disabled>
         </label>
         <label class="field"><span>Password</span><input type="password" name="new-password" autocomplete="new-password" required></label>
-        <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy">privacy policy</a>.</span></label>
+        <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy" data-privacy-link>privacy policy</a>.</span></label>
         <button class="btn" type="submit">Create account</button>
       </form>
     </aside>
@@ -123,10 +123,86 @@
 
   <footer id="privacy">
     <span>© 2026</span>
-    <nav aria-label="Footer"><a href="#privacy">Privacy</a><a href="#login">Faculty</a></nav>
+    <nav aria-label="Footer"><a href="#privacy" data-privacy-link>Privacy</a><a href="#login">Faculty</a></nav>
   </footer>
 
 </div>
+
+<dialog class="privacy-card" id="privacy-dialog" aria-labelledby="privacy-title">
+  <div class="privacy-card__header">
+    <h2 id="privacy-title">Terms and Privacy Policy</h2>
+    <button class="privacy-card__close" type="button" aria-label="Close privacy policy">&times;</button>
+  </div>
+
+  <div class="privacy-card__content">
+    <h3>1. Acceptance of Terms &amp; Eligibility</h3>
+    <p>By logging in, registering, or using this Student Portal, you certify that you are a officially enrolled or bonafide student of the University. You agree to comply with these Terms and Conditions, the University Student Handbook, and all prevailing rules of the Institution.</p>
+
+    <h3>2. Free Higher Education Compliance (R.A. 10931) &amp; Government Audits</h3>
+    <p>As a student of a State University, your education may be fully or partially funded by the Philippine Government under the <strong>Universal Access to Quality Tertiary Education Act (R.A. 10931)</strong>.</p>
+    <ul>
+      <li><strong>Data Transparency for Funding:</strong> You explicitly acknowledge and agree that the University is legally mandated to share your enrollment status, units taken, course details, and academic standing with the <strong>Commission on Higher Education (CHED)</strong>, the <strong>Unified Student Financial Assistance System for Tertiary Education (UniFAST)</strong>, and the <strong>Commission on Audit (COA)</strong> for state funding verification, billing, and transparency audits.</li>
+      <li><strong>Return Service Agreement (RSA):</strong> If your program or scholarship carries a mandatory Return Service Agreement or institutional service requirement, your compliance or non-compliance metrics will be tracked and stored within this portal.</li>
+    </ul>
+
+    <h3>3. Data Privacy and Sensitive Personal Information (R.A. 10173)</h3>
+    <p>In compliance with the <strong>Philippine Data Privacy Act of 2012</strong>, the University acts as a Personal Information Controller.</p>
+    <ul>
+      <li><strong>Processing Consent:</strong> You consent to the collecting, processing, and archiving of your personal and sensitive data (e.g., academic grades, permanent records, socio-economic profiles for scholarships, and digital footprints) purely for institutional, administrative, and academic purposes.</li>
+      <li><strong>Grade Confidentiality:</strong> To protect your data privacy, semester grades, evaluations, and scholastic deficiencies will only be displayed directly on your secure account interface and will not be disclosed to third parties without your written authorization, unless otherwise permitted under R.A. 10173.</li>
+    </ul>
+
+    <h3>4. Portal Account Security &amp; Accountability</h3>
+    <ul>
+      <li>Your Student ID number and portal account credentials are strictly personal and non-transferable.</li>
+      <li>Any transaction made through your account—including online enrollment, subject enlistment, dropping of subjects, or applications for shifting—is legally considered your official act.</li>
+      <li>Sharing your password with classmates, family members, or third-party enlistment "fixers" is a grave violation of IT security policy.</li>
+      <li>You must immediately report any suspected account breach or unauthorized access to the University Management Information Systems (MIS) / ICT Office.</li>
+    </ul>
+
+    <h3>5. Acceptable Use and Academic Integrity</h3>
+    <p>The portal must be utilized strictly for legitimate academic and institutional transactions. You are explicitly prohibited from:</p>
+    <ul>
+      <li>Altering, manipulating, or attempting to hack grades, attendance registers, or assessment data.</li>
+      <li>Using bots, web-scraping extensions, or automated tools to hijack enlistment queues during peak registration periods.</li>
+      <li>Uploading or distributing institutional modules, faculty-authored learning materials, exam questionnaires, or syllabi outside the portal.</li>
+      <li>Engaging in cyberbullying, trolling, or using defamatory, offensive, or politically abusive language on the portal’s forums, evaluation modules, or messaging systems.</li>
+    </ul>
+
+    <h3>6. System Availability, Peak Traffic, &amp; Deadlines</h3>
+    <p>The University strives to maintain portal availability. However, the system is provided on an <strong>"as-is" and "as-available"</strong> basis. The University is not liable for system slowdowns, server crashes, or localized internet dropouts during high-traffic periods (such as online enrollment or grade encoding weeks).</p>
+    <p><em>Note:</em> Students are solely responsible for completing transactions ahead of official deadlines set by the University Registrar. System congestion near a deadline will not be accepted as an excuse for late enlistment or submission.</p>
+
+    <h3>7. Suspension and Termination of Access</h3>
+    <p>The University reserves the right to restrict, suspend, or terminate portal access under the following conditions:</p>
+    <ul>
+      <li>Disciplinary sanctions, suspension, or expulsion as determined by the Office of Student Affairs (OSA).</li>
+      <li>Academic dismissal or failure to meet the retention policies of your respective college.</li>
+      <li>Maximum Residency Rule (MRR) expiration or floating student status.</li>
+    </ul>
+
+    <h3>8. Governing Law and Jurisdiction</h3>
+    <p>These Terms and Conditions are governed by the laws of the <strong>Republic of the Philippines</strong>. Any legal actions or disputes arising from the use of this portal shall be filed exclusively in the proper courts of the city or municipality where the main campus of the University is located.</p>
+  </div>
+</dialog>
+
+<script>
+  const privacyDialog = document.getElementById("privacy-dialog");
+  const privacyClose = privacyDialog.querySelector(".privacy-card__close");
+
+  document.querySelectorAll("[data-privacy-link]").forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      privacyDialog.showModal();
+    });
+  });
+
+  privacyClose.addEventListener("click", () => privacyDialog.close());
+
+  privacyDialog.addEventListener("click", (event) => {
+    if (event.target === privacyDialog) privacyDialog.close();
+  });
+</script>
 <script src="js/auth.js"></script>
 <script src="js/idswitch.js"></script>
 </body>
