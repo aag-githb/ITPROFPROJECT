@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <nav class="faculty-tabs header-tabs" id="faculty-profile-tabs" aria-label="Faculty home" hidden>
+      <a class="faculty-tab" href="subjects.html">Subjects</a>
+      <a class="faculty-tab" href="quiz-dashboard.html">Class Insights</a>
+      <a class="faculty-tab active" href="profile.html" aria-current="page">Profile</a>
+    </nav>
+    <nav class="faculty-tabs header-tabs" id="student-profile-tabs" aria-label="Student home" hidden>
+      <a class="faculty-tab" href="subjects.html">Subjects</a>
+      <a class="faculty-tab" href="student-progress.html">My Progress</a>
+      <a class="faculty-tab active" href="profile.html" aria-current="page">Profile</a>
+    </nav>
+    <div class="who"><span id="who">Loading...</span><button class="btn" id="logout" type="button">Log out</button></div>
+  </header>
+  <main>
+    <p class="crumbs"><a href="subjects.html">Home</a> / Profile</p>
+    <h1>Profile</h1>
+    <p class="msg" id="profile-message" role="alert"></p>
+    <form class="editor-panel" id="profile-form">
+      <label class="field"><span>Username</span><input name="username" required readonly aria-describedby="username-hint"></label>
+      <small id="username-hint" class="muted">Usernames cannot be changed because they identify class and quiz records.</small>
+      <label class="field"><span>Registered email</span><input name="email" type="email" required></label>
+      <label class="field"><span>Current password</span><input name="current_password" type="password" required></label>
+      <label class="field"><span>New password (optional)</span><input name="password" type="password" minlength="6"></label>
+      <button class="btn" type="submit">Save changes</button>
+    </form>
+    <section class="editor-panel">
+      <h2>Account status</h2>
+      <button class="btn secondary-button" id="toggle-status" type="button"></button>
+      <button class="btn danger-button" id="delete-account" type="button">Delete account</button>
+    </section>
+  </main>
+</div>
+<script src="js/auth.js"></script>
+<script src="js/profile.js"></script>
+</body>
+</html>

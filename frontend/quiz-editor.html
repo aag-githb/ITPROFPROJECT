@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz editor | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/topic-editor.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html">ITClassroom</a>
+    <div class="who"><span id="who">Loading...</span><button class="btn" id="logout" type="button">Log out</button></div>
+  </header>
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+  <main class="editor">
+    <p class="crumbs"><a id="back-link" href="#">Back to topics</a></p>
+    <h1>Quiz editor</h1>
+    <p id="quiz-message" role="status" aria-live="polite"></p>
+    <section class="editor-panel">
+      <div class="section-heading">
+        <h2>Questions <span id="question-count"></span></h2>
+      </div>
+      <p class="muted">A quiz must contain at least 10 and at most 20 questions. Use choices for multiple-choice questions.</p>
+      <div id="questions"></div>
+      <button class="btn quiz-add-question" id="add-question" type="button">
+        Add question
+      </button>
+    </section>
+    <div class="editor-actions">
+      <button class="btn" id="save-quiz" type="button">Save quiz</button>
+      <button class="btn" id="delete-quiz" type="button">Delete quiz</button>
+      <button class="btn" id="print-report" type="button">Print / Save PDF</button>
+      <a class="btn" id="report-link" href="#">Download CSV report</a>
+    </div>
+    <section class="editor-panel">
+      <h2>Student attempts</h2>
+      <div id="attempt-summary"></div>
+      <ul id="attempts"></ul>
+    </section>
+  </main>
+</div>
+<script src="js/auth.js"></script>
+<script src="js/quiz-editor.js"></script>
+</body>
+</html>

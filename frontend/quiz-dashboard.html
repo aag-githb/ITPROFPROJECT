@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quiz score dashboard | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .dashboard-actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 24px 0; }
+    .dashboard-actions .btn { width: auto; }
+    .score-table-wrap { overflow-x: auto; background: var(--periwinkle); color: var(--black); border-radius: 18px; padding: 8px; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid rgba(4, 6, 7, .16); }
+    th { color: var(--blue); }
+    .score-good { color: #166534; font-weight: 700; }
+    .score-low { color: #b91c1c; font-weight: 700; }
+    .student-records-button { width:auto; padding:8px 12px; border-radius:10px; white-space:nowrap; }
+    .student-records-modal { width:min(900px,calc(100% - 32px)); border:0; border-radius:22px; padding:0; background:var(--periwinkle); color:var(--black); box-shadow:0 30px 90px rgba(0,0,0,.7); }
+    .student-records-modal::backdrop { background:rgba(4,6,7,.78); }
+    .student-records-content { padding:26px; }
+    .student-records-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .student-records-header h2 { color:var(--blue); margin:0 0 16px; }
+    .student-records-summary { margin:0 0 16px; }
+    .student-records-modal .score-table-wrap { max-height:55vh; overflow:auto; }
+    .dashboard-tabs { display:flex; gap:8px; margin:24px 0 16px; }
+    .dashboard-tabs button { width:auto; }
+    .dashboard-tab[hidden] { display:none; }
+    .filter-bar { display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin:20px 0; }
+    .filter-bar .field { min-width:220px; margin:0; }
+    .toc-subject { margin:20px 0; padding:16px; background:var(--periwinkle); color:var(--black); border-radius:16px; }
+    .toc-subject h2 { color:var(--blue); }
+    .toc-subject ol { margin:0; }
+    .toc-subject a { color:var(--blue); }
+    @media print {
+      body { background: #fff; color: #000; }
+      .who, .dashboard-actions, .crumbs, .back-button { display: none !important; }
+      .wrap { max-width: none; padding: 0; }
+      .score-table-wrap { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html">ITClassroom</a>
+    <nav class="faculty-tabs header-tabs" aria-label="Faculty home">
+      <a class="faculty-tab" href="subjects.html">Subjects</a>
+      <a class="faculty-tab active" href="quiz-dashboard.html" aria-current="page">Class Insights</a>
+      <a class="faculty-tab" href="profile.html">Profile</a>
+    </nav>
+    <div class="who">
+      <span id="who">Loading...</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+  <main>
+    <p class="crumbs"><a href="subjects.html">Subjects</a> / Quiz score dashboard</p>
+    <h1>Class Insights</h1>
+    <p class="meta">A consolidated view of every completed or expired quiz attempt.</p>
+    <p class="msg" id="dashboard-message" role="alert"></p>
+    <div class="dashboard-tabs" role="tablist" aria-label="Faculty dashboard sections">
+      <button class="btn" id="scores-tab" type="button">Quiz scores</button>
+      <button class="btn" id="toc-tab" type="button">Table of contents</button>
+    </div>
+    <section class="dashboard-tab" id="scores-panel">
+      <div class="filter-bar">
+        <label class="field"><span>Category</span><select id="category-filter"><option value="">All categories</option></select></label>
+        <label class="field"><span>Year level</span><select id="year-filter"><option value="">All years</option></select></label>
+        <label class="field"><span>Section</span><select id="section-filter"><option value="">All sections</option></select></label>
+        <label class="field"><span>Academic year</span><select id="academic-year-filter"><option value="">All academic years</option></select></label>
+        <label class="field"><span>Subject</span><select id="subject-filter"><option value="">All subjects</option></select></label>
+        <label class="field"><span>Topic / lesson</span><select id="topic-filter"><option value="">All topics</option></select></label>
+        <button class="btn" id="clear-filters" type="button">Clear filters</button>
+      </div>
+    <div class="dashboard-actions">
+      <button class="btn" id="print-dashboard" type="button">Print / Save PDF</button>
+      <a class="btn" href="#" id="csv-link">Download spreadsheet (CSV)</a>
+    </div>
+    <div class="score-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Student</th><th>Quizzes</th><th>Attempts</th><th>Passed</th><th>Average score</th><th>Best score</th><th>Records</th></tr>
+        </thead>
+        <tbody id="score-rows"></tbody>
+      </table>
+    </div>
+    <p class="empty" id="empty" hidden>No quiz attempts have been submitted yet.</p>
+    </section>
+    <section class="dashboard-tab" id="toc-panel" hidden>
+      <p class="meta">Your subjects and their topics or lessons.</p>
+      <div id="toc-list"></div>
+    </section>
+  </main>
+</div>
+<dialog class="student-records-modal" id="student-records-modal" aria-labelledby="student-records-title">
+  <div class="student-records-content">
+    <div class="student-records-header">
+      <h2 id="student-records-title">Student records</h2>
+      <button class="modal-close" id="close-student-records" type="button" aria-label="Close">×</button>
+    </div>
+    <p class="msg" id="student-records-message" role="alert"></p>
+    <p id="student-records-summary" class="student-records-summary"></p>
+    <div class="score-table-wrap">
+      <table>
+        <thead><tr><th>Subject</th><th>Lesson</th><th>Score</th><th>Status</th><th>Completed</th></tr></thead>
+        <tbody id="student-record-rows"></tbody>
+      </table>
+    </div>
+    <p class="empty" id="student-records-empty" hidden>No records found for this student.</p>
+  </div>
+</dialog>
+<script src="js/auth.js"></script>
+<script src="js/quiz-dashboard.js"></script>
+</body>
+</html>

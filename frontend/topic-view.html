@@ -19,9 +19,17 @@
     </div>
   </header>
 
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+
   <main class="editor">
     <p class="crumbs"><a id="back-link" href="subjects.html">Back</a></p>
     <h1 id="view-title">Loading lesson...</h1>
+    <p id="view-description" class="topic-view-description"></p>
+    <div class="lesson-view-actions">
+      <a class="btn topic-action" id="edit-lesson" href="#" hidden>Edit lesson</a>
+    </div>
 
     <section class="editor-panel">
       <h2>Lesson</h2>
@@ -47,6 +55,10 @@
       <h2>Summary</h2>
       <div id="view-summary"></div>
     </section>
+
+    <div class="lesson-quiz-action" id="lesson-quiz-action" hidden>
+      <a class="btn" id="start-quiz" href="#">Start quiz</a>
+    </div>
   </main>
 </div>
 <script src="js/auth.js"></script>

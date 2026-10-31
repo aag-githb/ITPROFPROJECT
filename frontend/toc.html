@@ -18,27 +18,130 @@
     </div>
   </header>
 
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+
   <main>
     <p class="crumbs"><a href="subjects.html">Subjects</a> / <span id="crumb">Topics</span></p>
     <h1 id="title">Topics</h1>
     <p class="meta" id="meta"></p>
+    <div class="subject-management-actions">
+      <button class="btn subject-edit-button" id="open-subject-edit" type="button" hidden>
+        Edit subject
+      </button>
+      <button class="btn danger-button" id="delete-subject" type="button" hidden>
+        Delete subject
+      </button>
+    </div>
     <p class="msg" id="list-msg" role="alert"></p>
 
+    <nav class="faculty-tabs subject-tabs" aria-label="Subject sections">
+      <a class="faculty-tab active" id="lesson-tab" href="#" aria-current="page">Lesson</a>
+      <a class="faculty-tab" id="people-tab" href="#">People</a>
+    </nav>
+
+    <section id="lesson-panel">
     <!-- Faculty only -->
     <section class="add" id="add-box">
-      <h2>Add a topic</h2>
-      <p class="msg" id="msg" role="alert"></p>
-      <form id="add-form">
-        <label class="field"><span>Topic title</span><input name="title" required></label>
-        <button class="btn" type="submit">Add topic</button>
-      </form>
+      <button class="btn add-topic-button" id="open-topic-modal" type="button">+ Add topic</button>
     </section>
+
+    <p class="msg" id="quiz-msg" role="alert"></p>
 
     <ul class="toc" id="list"></ul>
     <p class="empty" id="empty" hidden></p>
+    </section>
+
+    <section id="people-panel" class="people-panel" hidden>
+      <h2>People</h2>
+      <p class="msg" id="people-msg" role="alert"></p>
+      <div class="people-columns">
+        <div>
+          <h3>Faculty</h3>
+          <ul id="faculty-list" class="people-list"></ul>
+        </div>
+        <div>
+          <h3>Students</h3>
+          <ul id="student-list" class="people-list"></ul>
+        </div>
+      </div>
+    </section>
   </main>
 
 </div>
+
+<dialog class="subject-modal" id="subject-edit-modal" aria-labelledby="subject-edit-title">
+  <form id="subject-edit-form" class="add-form">
+    <div class="topic-modal-header">
+      <h2 id="subject-edit-title">Edit subject</h2>
+      <button class="modal-close" type="button" id="close-subject-edit" aria-label="Close">×</button>
+    </div>
+    <p class="msg" id="subject-edit-msg" role="alert"></p>
+    <label class="field"><span>Subject Name</span><input name="name" maxlength="150" required></label>
+    <label class="field"><span>Subject Code</span><input name="code" maxlength="30" required></label>
+    <label class="field">
+      <span>Category</span>
+      <select name="category" required>
+        <option value="Core">Core</option>
+        <option value="Major">Major</option>
+        <option value="Elective">Elective</option>
+        <option value="General Education">General Education</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Term / Semester</span>
+      <select name="term" required>
+        <option value="1st Semester">1st Semester</option>
+        <option value="2nd Semester">2nd Semester</option>
+        <option value="Summer">Summer</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>Year Level</span>
+      <select name="year_level" required>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+      </select>
+    </label>
+    <label class="field"><span>Section</span><input name="section" maxlength="30" required></label>
+    <label class="field">
+      <span>Academic Year</span>
+      <select name="academic_year" required>
+        <option value="2024-2025">2024-2025</option>
+        <option value="2025-2026">2025-2026</option>
+        <option value="2026-2027">2026-2027</option>
+        <option value="2027-2028">2027-2028</option>
+        <option value="2028-2029">2028-2029</option>
+        <option value="2029-2030">2029-2030</option>
+        <option value="2030-2031">2030-2031</option>
+        <option value="2031-2032">2031-2032</option>
+      </select>
+    </label>
+    <div class="modal-actions">
+      <button class="btn secondary-button" type="button" id="cancel-subject-edit">Cancel</button>
+      <button class="btn" type="submit">Save changes</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="topic-modal" id="topic-modal" aria-labelledby="topic-modal-title">
+  <form method="dialog" id="add-form">
+    <div class="topic-modal-header">
+      <h2 id="topic-modal-title">Create a new topic</h2>
+      <button class="modal-close" type="button" id="close-topic-modal" aria-label="Close">×</button>
+    </div>
+    <p class="msg" id="msg" role="alert"></p>
+    <label class="field"><span>Topic</span><input name="title" maxlength="200" required></label>
+    <label class="field"><span>Description of the topic</span><textarea name="description" rows="4" maxlength="1000" placeholder="What will students learn?"></textarea></label>
+    <div class="modal-actions">
+      <button class="btn secondary-button" type="button" id="cancel-topic-modal">Cancel</button>
+      <button class="btn" type="submit">Create topic</button>
+    </div>
+  </form>
+</dialog>
 
 <script src="js/auth.js"></script>
 <script src="js/toc.js"></script>

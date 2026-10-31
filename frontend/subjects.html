@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Subjects | ITClassroom</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
 
   <style>
     .topbar {
@@ -49,6 +50,18 @@
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1rem;
       margin-top: 1rem;
+    }
+
+    .subject {
+      padding: 1.25rem;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 12px;
+    }
+
+    .subject-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
     }
 
     a.subject {
@@ -97,6 +110,17 @@
       overflow-wrap: anywhere;
     }
 
+    .subject-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    .subject-actions .btn {
+      width: auto;
+      padding: 9px 16px;
+    }
+
     .msg {
       color: #b00020;
     }
@@ -130,6 +154,75 @@
       height: 100%;
       background: #4b8b68;
     }
+
+    .hidden-classes {
+      margin-top: 2rem;
+    }
+
+    .hidden-classes-toggle {
+      width: auto;
+      min-width: 220px;
+    }
+
+    .hidden-classes-content {
+      margin-top: 1rem;
+    }
+
+    .hidden-classes-content[hidden] { display: none; }
+
+    .subject {
+      position: relative;
+    }
+
+    .subject-menu {
+      position: absolute;
+      top: .75rem;
+      right: .75rem;
+      z-index: 2;
+    }
+
+    .subject-menu-button {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(4, 6, 7, .22);
+      color: var(--periwinkle);
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .subject-menu-button:hover,
+    .subject-menu-button:focus-visible { background: rgba(4, 6, 7, .5); }
+
+    .subject-menu-list {
+      position: absolute;
+      top: calc(100% + .35rem);
+      right: 0;
+      display: grid;
+      min-width: 150px;
+      padding: .35rem;
+      border: 1px solid rgba(227, 217, 252, .25);
+      border-radius: 10px;
+      background: var(--black);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+    }
+
+    .subject-menu-list[hidden] { display: none; }
+    .subject-menu-list button {
+      width: 100%;
+      padding: .55rem .7rem;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--periwinkle);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .subject-menu-list button:hover,
+    .subject-menu-list button:focus-visible { background: var(--blue); }
   </style>
 </head>
 
@@ -141,6 +234,17 @@
       <span class="star" aria-hidden="true"></span>ITClassroom
     </a>
 
+    <nav class="faculty-tabs header-tabs" id="faculty-tabs" aria-label="Faculty home">
+      <a class="faculty-tab active" href="subjects.html" aria-current="page">Subjects</a>
+      <a class="faculty-tab" href="quiz-dashboard.html">Class Insights</a>
+      <a class="faculty-tab" href="profile.html">Profile</a>
+    </nav>
+    <nav class="faculty-tabs header-tabs" id="student-tabs" aria-label="Student home" hidden>
+      <a class="faculty-tab active" href="subjects.html" aria-current="page">Subjects</a>
+      <a class="faculty-tab" href="student-progress.html">My Progress</a>
+      <a class="faculty-tab" href="profile.html">Profile</a>
+    </nav>
+
     <div class="who">
       <span id="who">Loading...</span>
       <button class="btn" id="logout" type="button">Log out</button>
@@ -149,17 +253,29 @@
 
   <main>
     <div class="head">
-      <h1>Your subjects</h1>
+      <h1>Your Subjects</h1>
     </div>
 
     <p class="msg" id="list-msg" role="alert"></p>
 
+    <section class="student-join" id="student-join" hidden>
+      <button class="btn add-topic-button" id="open-join-modal" type="button">
+        + Enter a subject code
+      </button>
+    </section>
+
     <!-- Faculty only -->
     <section class="add" id="add-box">
-      <h2>Add a subject</h2>
-      <p class="msg" id="msg" role="alert"></p>
+      <button class="btn add-topic-button" id="open-subject-modal" type="button">+ Add subject</button>
+    </section>
 
-      <form id="add-form">
+    <dialog class="subject-modal" id="subject-modal" aria-labelledby="subject-modal-title">
+      <form id="add-form" class="add-form">
+        <div class="topic-modal-header">
+          <h2 id="subject-modal-title">Create a new subject</h2>
+          <button class="modal-close" type="button" id="close-subject-modal" aria-label="Close">×</button>
+        </div>
+        <p class="msg" id="msg" role="alert"></p>
         <label class="field">
           <span>Subject Name</span>
           <input name="name" maxlength="150" required>
@@ -171,11 +287,21 @@
         </label>
 
         <label class="field">
+          <span>Category</span>
+          <select name="category" required>
+            <option value="Core">Core</option>
+            <option value="Major">Major</option>
+            <option value="Elective">Elective</option>
+            <option value="General Education">General Education</option>
+          </select>
+        </label>
+
+        <label class="field">
           <span>Term / Semester</span>
           <select name="term" required>
             <option value="1st Semester">1st Semester</option>
             <option value="2nd Semester">2nd Semester</option>
-            <option value="3rd Semester">3rd Semester</option>
+          <option value="Summer">Summer</option>
           </select>
         </label>
 
@@ -190,22 +316,69 @@
         </label>
 
         <label class="field">
-          <span>Academic Year</span>
-          <input
-            name="academic_year"
-            placeholder="2026-2027"
-            pattern="[0-9]{4}-[0-9]{4}"
-            title="Use the format 2026-2027"
-            required
-          >
+          <span>Section</span>
+          <input name="section" maxlength="30" placeholder="e.g. IT-4A" required>
         </label>
 
-        <button class="btn" type="submit">Add subject</button>
+        <label class="field">
+          <span>Academic Year</span>
+          <select name="academic_year" required>
+            <option value="2024-2025">2024-2025</option>
+            <option value="2025-2026">2025-2026</option>
+            <option value="2026-2027" selected>2026-2027</option>
+            <option value="2027-2028">2027-2028</option>
+            <option value="2028-2029">2028-2029</option>
+            <option value="2029-2030">2029-2030</option>
+            <option value="2030-2031">2030-2031</option>
+            <option value="2031-2032">2031-2032</option>
+          </select>
+        </label>
+
+        <div class="modal-actions">
+          <button class="btn secondary-button" type="button" id="cancel-subject-modal">Cancel</button>
+          <button class="btn" id="subject-submit" type="submit">Create subject</button>
+        </div>
       </form>
-    </section>
+    </dialog>
+
+    <dialog class="topic-modal" id="join-modal" aria-labelledby="join-modal-title">
+      <form id="join-form">
+        <div class="topic-modal-header">
+          <h2 id="join-modal-title">Join a subject</h2>
+          <button class="modal-close" type="button" id="close-join-modal" aria-label="Close">×</button>
+        </div>
+        <p>Enter the subject code provided by your faculty.</p>
+        <p class="msg" id="join-msg" role="alert"></p>
+        <label class="field">
+          <span>Subject join code</span>
+          <input name="join_code" maxlength="6" required autocomplete="off" spellcheck="false">
+        </label>
+        <div class="modal-actions">
+          <button class="btn secondary-button" type="button" id="cancel-join-modal">Cancel</button>
+          <button class="btn" type="submit">Join subject</button>
+        </div>
+      </form>
+    </dialog>
 
     <div class="subjects" id="list"></div>
     <p class="empty" id="empty" hidden></p>
+    <aside class="reminders-panel" id="reminders-panel" hidden aria-labelledby="reminders-title">
+      <div class="reminders-header">
+        <h2 id="reminders-title">Reminders</h2>
+        <button class="reminders-close" id="reminders-close" type="button" aria-label="Close reminders">×</button>
+      </div>
+      <div id="reminders-list"></div>
+      <p class="reminders-empty" id="reminders-empty" hidden>No pending quizzes. You’re all caught up!</p>
+    </aside>
+    <button class="reminders-toggle" id="reminders-toggle" type="button" hidden>
+      Reminders <span id="reminders-count" aria-label="pending reminders">0</span>
+    </button>
+    <section class="hidden-classes" id="hidden-classes" hidden>
+      <button class="btn secondary-button hidden-classes-toggle" id="hidden-classes-toggle" type="button">
+        Hidden classes
+      </button>
+      <div class="subjects hidden-classes-content" id="hidden-list" hidden></div>
+    </section>
   </main>
 
 </div>
@@ -213,11 +386,52 @@
 <script src="js/auth.js"></script>
 <script>
   const list = document.getElementById("list");
+  const hiddenList = document.getElementById("hidden-list");
+  const hiddenClasses = document.getElementById("hidden-classes");
+  const hiddenClassesToggle = document.getElementById("hidden-classes-toggle");
   const emptyEl = document.getElementById("empty");
   const listMsg = document.getElementById("list-msg");
+  const remindersPanel = document.getElementById("reminders-panel");
+  const remindersToggle = document.getElementById("reminders-toggle");
+  const remindersList = document.getElementById("reminders-list");
+  const remindersEmpty = document.getElementById("reminders-empty");
+  const remindersCount = document.getElementById("reminders-count");
   const form = document.getElementById("add-form");
+  const joinForm = document.getElementById("join-form");
+  const joinModal = document.getElementById("join-modal");
+  let allSubjects = [];
+  let hiddenSubjects = [];
+  let joiningSubject = null;
+  let editingSubjectId = null;
 
   let role = "";
+
+  function renderReminders(subjects) {
+    const reminders = subjects.flatMap(subject =>
+      (subject.topics || [])
+        .filter(topic => topic.has_quiz && !(topic.attempts || []).length)
+        .map(topic => ({ subject, topic }))
+    );
+
+    remindersList.replaceChildren(...reminders.map(({ subject, topic }) => {
+      const item = el("article", undefined, "reminder-item");
+      item.append(
+        el("p", `You have not taken a quiz yet on "${topic.title}" on ${subject.name}.`, "reminder-text")
+      );
+      const takeQuiz = el("a", "Take the quiz", "btn reminder-action");
+      takeQuiz.href =
+        `quiz.html?id=${encodeURIComponent(topic.id)}` +
+        `&subject=${encodeURIComponent(subject.id)}`;
+      item.append(takeQuiz);
+      return item;
+    }));
+
+    remindersCount.textContent = String(reminders.length);
+    remindersToggle.hidden = role !== "student";
+    remindersToggle.classList.toggle("has-reminders", reminders.length > 0);
+    remindersPanel.hidden = reminders.length === 0;
+    remindersEmpty.hidden = reminders.length > 0;
+  }
 
   function el(tag, text, cls) {
     const e = document.createElement(tag);
@@ -226,11 +440,47 @@
     return e;
   }
 
-  function card(s) {
-    const a = el("a", undefined, "subject");
-    a.href = "toc.html?subject=" + encodeURIComponent(s.id);
-    a.setAttribute("aria-label", "Open " + s.name);
+  function card(s, hidden = false) {
+    const cardEl = el("article", undefined, "subject");
+    const menu = el("div", undefined, "subject-menu");
+    const menuButton = el("button", "⋮", "subject-menu-button");
+    menuButton.type = "button";
+    menuButton.setAttribute("aria-label", hidden ? "Show class options" : "Class options");
+    menuButton.setAttribute("aria-expanded", "false");
+    const menuList = el("div", undefined, "subject-menu-list");
+    menuList.hidden = true;
 
+    const visibilityButton = el("button", hidden ? "Unhide class" : "Hide class");
+    visibilityButton.type = "button";
+    visibilityButton.addEventListener("click", () => setSubjectHidden(s.id, !hidden));
+    menuList.append(visibilityButton);
+    if (!hidden && role === "faculty") {
+      const editButton = el("button", "Edit subject");
+      editButton.type = "button";
+      editButton.addEventListener("click", () => openSubjectModal(s));
+      menuList.append(editButton);
+    }
+
+    menuButton.addEventListener("click", event => {
+      event.stopPropagation();
+      const isOpen = !menuList.hidden;
+      document.querySelectorAll(".subject-menu-list").forEach(item => {
+        item.hidden = true;
+      });
+      document.querySelectorAll(".subject-menu-button").forEach(button => {
+        button.setAttribute("aria-expanded", "false");
+      });
+      menuList.hidden = isOpen;
+      menuButton.setAttribute("aria-expanded", String(!isOpen));
+    });
+    menu.append(menuButton, menuList);
+    cardEl.append(menu);
+
+    const a = el("a", undefined, "subject-link");
+    a.href = s.enrolled || role === "faculty"
+      ? "toc.html?subject=" + encodeURIComponent(s.id)
+      : "#";
+    a.setAttribute("aria-label", "Open " + s.name);
     a.append(
       el("span", s.code, "code"),
       el("h3", s.name)
@@ -240,7 +490,9 @@
 
     const fields = [
       ["Term / Semester", s.term],
+      ["Category", s.category || "Not set"],
       ["Year Level", s.year_level],
+      ["Section", s.section || "Not set"],
       ["Academic Year", s.academic_year]
     ];
 
@@ -271,7 +523,74 @@
       a.append(bar, progress);
     }
 
-    return a;
+    cardEl.append(a);
+    if (role === "faculty") {
+      cardEl.append(el("p", "Join code: " + (s.join_code || "Unavailable"), "subject-join-code"));
+    }
+    return cardEl;
+  }
+
+  async function setSubjectHidden(subjectId, hidden) {
+    try {
+      const result = await api(
+        `/subjects/${encodeURIComponent(subjectId)}/visibility`,
+        { hidden },
+        "PUT"
+      );
+      if (!result.ok) {
+        throw new Error(result.body?.error || "Unable to update class visibility.");
+      }
+      await loadSubjects();
+    } catch (error) {
+      listMsg.textContent = error.message;
+    }
+  }
+
+  function renderSubjects() {
+    list.replaceChildren(...allSubjects.map(subject => card(subject)));
+    hiddenList.replaceChildren(...hiddenSubjects.map(subject => card(subject, true)));
+    hiddenClasses.hidden = hiddenSubjects.length === 0;
+    hiddenClassesToggle.textContent = `Hidden classes (${hiddenSubjects.length})`;
+    emptyEl.textContent = allSubjects.length
+      ? ""
+      : (hiddenSubjects.length ? "All your subjects are hidden. Open Hidden classes to restore one." :
+        (role === "faculty"
+          ? "No subjects yet. Add your first subject above."
+          : "No subjects yet. Your faculty will add them here."));
+    emptyEl.hidden = allSubjects.length > 0;
+  }
+
+  function openJoinModal() {
+    joiningSubject = null;
+    document.getElementById("join-msg").textContent = "";
+    joinForm.reset();
+    joinModal.showModal();
+  }
+
+  function openSubjectModal(subject = null) {
+    const modal = document.getElementById("subject-modal");
+    const title = document.getElementById("subject-modal-title");
+    const submit = document.getElementById("subject-submit");
+    const message = document.getElementById("msg");
+
+    editingSubjectId = subject?.id || null;
+    title.textContent = editingSubjectId ? "Edit subject" : "Create a new subject";
+    submit.textContent = editingSubjectId ? "Save changes" : "Create subject";
+    message.textContent = "";
+
+    if (subject) {
+      form.elements["name"].value = subject.name || "";
+      form.elements["code"].value = subject.code || "";
+      form.elements["category"].value = subject.category || "Core";
+      form.elements["section"].value = subject.section || "";
+      form.elements["term"].value = subject.term || "1st Semester";
+      form.elements["year_level"].value = subject.year_level || "1st Year";
+      form.elements["academic_year"].value = subject.academic_year || "2026-2027";
+    } else {
+      form.reset();
+    }
+
+    modal.showModal();
   }
 
   async function loadSubjects() {
@@ -289,27 +608,41 @@
         return;
       }
 
-      const subjects = Array.isArray(r.body) ? r.body : [];
-
-      list.replaceChildren(...subjects.map(card));
-
-      emptyEl.textContent = role === "faculty"
-        ? "No subjects yet. Add your first subject above."
-        : "No subjects yet. Your faculty will add them here.";
-
-      emptyEl.hidden = subjects.length > 0;
+      allSubjects = Array.isArray(r.body) ? r.body : [];
+      const hiddenResult = await api("/subjects/hidden");
+      if (!hiddenResult.ok) {
+        throw new Error(
+          hiddenResult.body?.error || "Couldn't load hidden classes."
+        );
+      }
+      hiddenSubjects = Array.isArray(hiddenResult.body) ? hiddenResult.body : [];
+      renderSubjects();
+      if (role === "student") {
+        const progressResult = await api("/student/progress");
+        if (progressResult.ok) {
+          renderReminders(progressResult.body.subjects || []);
+        }
+      }
     } catch (err) {
       listMsg.textContent =
         "Unable to connect to the server. Check whether Flask is running.";
     }
+
   }
+
+  remindersToggle.addEventListener("click", () => {
+    remindersPanel.hidden = !remindersPanel.hidden;
+  });
+  document.getElementById("reminders-close").addEventListener("click", () => {
+    remindersPanel.hidden = true;
+  });
 
   async function init() {
     try {
       const r = await api("/me");
 
       if (!r.ok) {
-        location.href = "login.html";
+        location.replace("login.html");
         return;
       }
 
@@ -320,6 +653,13 @@
 
       if (role === "faculty") {
         document.getElementById("add-box").style.display = "block";
+        document.getElementById("faculty-tabs").hidden = false;
+        document.getElementById("student-tabs").hidden = true;
+        document.getElementById("student-join").hidden = true;
+      } else {
+        document.getElementById("faculty-tabs").hidden = true;
+        document.getElementById("student-tabs").hidden = false;
+        document.getElementById("student-join").hidden = false;
       }
 
       await loadSubjects();
@@ -337,6 +677,8 @@
     const data = {
       name: form.elements["name"].value.trim(),
       code: form.elements["code"].value.trim(),
+      category: form.elements["category"].value,
+      section: form.elements["section"].value.trim(),
       term: form.elements["term"].value,
       year_level: form.elements["year_level"].value,
       academic_year: form.elements["academic_year"].value.trim()
@@ -351,15 +693,21 @@
     msg.textContent = "";
 
     try {
-      const r = await api("/subjects", data);
+      const endpoint = editingSubjectId
+        ? "/subjects/" + encodeURIComponent(editingSubjectId)
+        : "/subjects";
+      const r = await api(endpoint, data, editingSubjectId ? "PUT" : undefined);
 
       if (!r.ok) {
         msg.textContent =
-          (r.body && r.body.error) || "Couldn't add the subject.";
+          (r.body && r.body.error) ||
+          (editingSubjectId ? "Couldn't update the subject." : "Couldn't add the subject.");
         return;
       }
 
+      editingSubjectId = null;
       form.reset();
+      document.getElementById("subject-modal").close();
       await loadSubjects();
     } catch (err) {
       msg.textContent = "Unable to connect to the server.";
@@ -370,10 +718,58 @@
 
   document.getElementById("logout").addEventListener("click", async () => {
     await api("/logout", {});
-    location.href = "login.html";
+    location.replace("login.html");
   });
 
   init();
+
+  document.getElementById("open-subject-modal")?.addEventListener("click", () => {
+    openSubjectModal();
+  });
+  document.getElementById("close-subject-modal")?.addEventListener("click", () => {
+    document.getElementById("subject-modal").close();
+  });
+  document.getElementById("cancel-subject-modal")?.addEventListener("click", () => {
+    document.getElementById("subject-modal").close();
+  });
+
+  hiddenClassesToggle.addEventListener("click", () => {
+    hiddenList.hidden = !hiddenList.hidden;
+    hiddenClassesToggle.setAttribute("aria-expanded", String(!hiddenList.hidden));
+  });
+
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".subject-menu-list").forEach(menuItem => {
+      menuItem.hidden = true;
+    });
+    document.querySelectorAll(".subject-menu-button").forEach(button => {
+      button.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  joinForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    const message = document.getElementById("join-msg");
+    const button = joinForm.querySelector('[type="submit"]');
+    button.disabled = true;
+    message.textContent = "";
+    try {
+      const result = await api(
+        "/subjects/enroll",
+        { join_code: joinForm.elements.join_code.value.trim().toUpperCase() }
+      );
+      if (!result.ok) throw new Error(result.body?.error || "Unable to join subject.");
+      joinModal.close();
+      await loadSubjects();
+    } catch (error) {
+      message.textContent = error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+  document.getElementById("close-join-modal").addEventListener("click", () => joinModal.close());
+  document.getElementById("cancel-join-modal").addEventListener("click", () => joinModal.close());
+  document.getElementById("open-join-modal").addEventListener("click", openJoinModal);
 </script>
 </body>
 </html>

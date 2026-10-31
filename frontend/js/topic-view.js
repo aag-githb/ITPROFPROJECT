@@ -81,6 +81,7 @@ async function init() {
   titleElement.textContent = "Loading lesson…";
 
   try {
+    const user = await request("/me");
     const data = await request(
       `/topics/${encodeURIComponent(topicId)}`
     );
@@ -92,6 +93,8 @@ async function init() {
     }
 
     titleElement.textContent = topic.title || "Untitled Topic";
+    document.getElementById("view-description").textContent =
+      topic.description || "No topic description provided.";
     document.title = `${topic.title || "Lesson"} | ITClassroom`;
 
     // Show the teacher's saved, formatted lesson content.
@@ -107,6 +110,20 @@ async function init() {
     // Return to the correct topics page.
     document.getElementById("back-link").href =
   `toc.html?subject=${encodeURIComponent(subjectId)}`;
+    if (user.role === "faculty") {
+      const editLink = document.getElementById("edit-lesson");
+      editLink.href =
+        `topic-editor.html?id=${encodeURIComponent(topicId)}` +
+        `&subject=${encodeURIComponent(subjectId)}`;
+      editLink.hidden = false;
+    } else if (topic.has_quiz) {
+      const quizAction = document.getElementById("lesson-quiz-action");
+      const quizLink = document.getElementById("start-quiz");
+      quizLink.href =
+        `quiz.html?id=${encodeURIComponent(topicId)}` +
+        `&subject=${encodeURIComponent(subjectId)}`;
+      quizAction.hidden = false;
+    }
 
     // Render uploaded presentations.
     const files = document.getElementById("view-presentations");

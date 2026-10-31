@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Progress | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <style>
+    .progress-subject {
+      margin: 0 0 18px;
+      padding: 22px;
+      border: 1px solid rgba(227,217,252,.18);
+      border-radius: 18px;
+      background: rgba(4,6,7,.55);
+    }
+    .progress-subject-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+      flex-wrap: wrap;
+    }
+    .progress-subject h2 { margin: 0 0 4px; }
+    .progress-subject-meta { margin: 0; opacity: .75; }
+    .progress-summary { min-width: 220px; }
+    .progress-summary-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .9rem;
+      margin-bottom: 6px;
+    }
+    .progress-summary .bar { margin-top: 0; }
+    .progress-topics {
+      list-style: none;
+      margin: 20px 0 0;
+      padding: 0;
+      border-top: 1px solid rgba(227,217,252,.18);
+    }
+    .progress-topic {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, .8fr);
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(227,217,252,.12);
+    }
+    .progress-topic-title { font-weight: 700; }
+    .progress-attempts { margin: 0; padding: 0; list-style: none; }
+    .progress-attempt { font-size: .88rem; opacity: .85; }
+    .progress-passed { color: #9de5b5; }
+    .progress-failed { color: #ffb3c4; }
+    @media (max-width: 700px) {
+      .progress-topic { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html"><span class="star" aria-hidden="true"></span>ITClassroom</a>
+    <nav class="faculty-tabs header-tabs" aria-label="Student home">
+      <a class="faculty-tab" href="subjects.html">Subjects</a>
+      <a class="faculty-tab active" href="student-progress.html" aria-current="page">My Progress</a>
+      <a class="faculty-tab" href="profile.html">Profile</a>
+    </nav>
+    <div class="who">
+      <span id="who">Loading...</span>
+      <button class="btn" id="logout" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <p class="crumbs"><a href="subjects.html">Subjects</a> / My Progress</p>
+    <h1>My Progress</h1>
+    <p class="meta">Your lesson completion and quiz records for every enrolled subject.</p>
+    <p class="msg" id="progress-message" role="alert"></p>
+    <section id="progress-list"></section>
+    <p class="empty" id="progress-empty" hidden>No enrolled subjects yet.</p>
+  </main>
+</div>
+<script src="js/auth.js"></script>
+<script src="js/student-progress.js"></script>
+</body>
+</html>

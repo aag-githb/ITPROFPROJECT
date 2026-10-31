@@ -20,6 +20,10 @@
     </nav>
   </header>
 
+  <button class="back-button" type="button" data-back-button data-fallback="login.html">
+    ← Back
+  </button>
+
   <div class="grid" id="top">
     <main>
       <h1>Learn a topic, pass the quiz, move on.</h1>
@@ -115,6 +119,7 @@
           <input name="rname" autocomplete="name" placeholder="Juan Dela Cruz" required disabled>
         </label>
         <label class="field"><span>Password</span><input type="password" name="new-password" autocomplete="new-password" required></label>
+        <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" required></label>
         <label class="check"><input type="checkbox" required><span>I have read the <a href="#privacy" data-privacy-link>privacy policy</a>.</span></label>
         <button class="btn" type="submit">Create account</button>
       </form>

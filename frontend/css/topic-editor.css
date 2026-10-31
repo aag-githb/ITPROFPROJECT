@@ -103,6 +103,59 @@
   opacity: 1;
 }
 
+/* Quiz answer choices stay together as a readable, full-width option row. */
+.editor #quiz-form .slide-card {
+  gap: 0;
+  padding: 18px;
+}
+
+.editor #quiz-form .slide-card legend {
+  max-width: 100%;
+  padding: 0 6px;
+  color: var(--ink-soft);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.editor #quiz-form .slide-card label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: var(--surface-alt);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.editor #quiz-form .slide-card label:hover {
+  background: var(--hover);
+  border-color: var(--line);
+}
+
+.editor #quiz-form .slide-card label:has(input:checked) {
+  background: #e9e3ff;
+  border-color: var(--link);
+}
+
+.editor #quiz-form input[type="radio"] {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--link);
+}
+
+.editor #quiz-form input[type="text"] {
+  margin-top: 12px;
+}
+
 .editor textarea {
   resize: vertical;
 }
@@ -151,6 +204,10 @@
 
 .section-heading h2 {
   margin: 0;
+}
+
+.quiz-add-question {
+  margin-top: 16px;
 }
 
 /* File input and its button sit on one row, then wrap on small screens */

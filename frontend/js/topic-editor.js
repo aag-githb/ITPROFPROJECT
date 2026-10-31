@@ -7,6 +7,7 @@ const subjectId = params.get("subject");
 
 const titleInput = document.getElementById("lesson-title");
 const contentInput = document.getElementById("lesson-content");
+const descriptionInput = document.getElementById("lesson-description");
 const summaryInput = document.getElementById("lesson-summary");
 const slidesContainer = document.getElementById("slides");
 const message = document.getElementById("editor-message");
@@ -147,7 +148,7 @@ function renderPresentations() {
     remove.textContent = "Remove";
 
     remove.addEventListener("click", async () => {
-      if (!confirm(`Remove "${file.name}"?`)) return;
+      if (!await confirmDeletion(`Remove "${file.name}"?`)) return;
 
       try {
         await request(
@@ -184,6 +185,7 @@ async function loadLesson() {
 
     titleInput.value = topic.title || "";
     contentInput.innerHTML = topic.content || "";
+    descriptionInput.value = topic.description || "";
     summaryInput.value = topic.summary || "";
 
     slides = Array.isArray(topic.slides) ? topic.slides : [];
@@ -254,6 +256,7 @@ document.getElementById("save-lesson").addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title,
+        description: descriptionInput.value.trim(),
         content: contentInput.innerHTML,
         summary: summaryInput.value,
         slides: collectSlides(),

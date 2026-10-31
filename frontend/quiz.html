@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Take quiz | ITClassroom</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/topic-editor.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="subjects.html">ITClassroom</a>
+    <div class="who"><span id="who">Loading...</span><button class="btn" id="logout" type="button">Log out</button></div>
+  </header>
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+  <main class="editor">
+    <p class="crumbs"><a id="back-link" href="#">Back to topics</a></p>
+    <h1 id="quiz-title">Quiz</h1>
+    <p id="quiz-message" role="status" aria-live="polite"></p>
+    <div class="editor-panel">
+      <form id="quiz-form"></form>
+      <button class="btn" id="submit-quiz" type="button">Submit quiz</button>
+    </div>
+  </main>
+</div>
+<dialog class="quiz-result-modal" id="quiz-result-modal" aria-labelledby="quiz-result-title">
+  <div class="quiz-result-content">
+    <h2 id="quiz-result-title">Quiz result</h2>
+    <p id="result"></p>
+    <h3>Attempt history</h3>
+    <ul id="history"></ul>
+    <div class="modal-actions quiz-result-actions">
+      <a class="btn" id="next-lesson" href="#">Proceed to next lesson</a>
+      <a class="btn" href="student-progress.html">Check progress</a>
+      <a class="btn secondary-button" id="topics-link" href="#">Topics</a>
+    </div>
+  </div>
+</dialog>
+<script src="js/auth.js"></script>
+<script src="js/quiz.js"></script>
+</body>
+</html>

@@ -20,6 +20,10 @@
     </div>
   </header>
 
+  <button class="back-button" type="button" data-back-button data-fallback="subjects.html">
+    ← Back
+  </button>
+
   <main class="editor" id="editor-main">
     <nav class="crumbs" aria-label="Breadcrumb">
       <a id="back-link" href="subjects.html">Back to topics</a>
@@ -35,6 +39,12 @@
       <input id="lesson-title" name="title" maxlength="200" required
              autocomplete="off" aria-describedby="title-hint">
       <small id="title-hint" class="muted">Up to 200 characters.</small>
+    </label>
+
+    <label class="field" for="lesson-description">
+      <span>Topic description</span>
+      <textarea id="lesson-description" name="description" maxlength="1000" rows="3"
+                placeholder="Tell students what they will learn in this topic…"></textarea>
     </label>
 
     <section class="editor-panel" aria-labelledby="content-heading">
