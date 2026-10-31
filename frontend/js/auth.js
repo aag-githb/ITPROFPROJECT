@@ -1,13 +1,18 @@
 const API = `http://${location.hostname}:5000/api`;
 
 async function api(path, data, method) {
+  const requestMethod = method || (data ? "POST" : "GET");
   const res = await fetch(API + path, {
-    method: method || (data ? "POST" : "GET"),
-    headers: { "Content-Type": "application/json" },
+    method: requestMethod,
+    headers: data ? { "Content-Type": "application/json" } : undefined,
     credentials: "include",
     body: data ? JSON.stringify(data) : undefined,
   });
-  return { ok: res.ok, body: await res.json() };
+  const contentType = res.headers.get("content-type") || "";
+  const body = contentType.includes("application/json")
+    ? await res.json()
+    : { error: "The backend server is out of date. Restart Flask and try again." };
+  return { ok: res.ok, body };
 }
 
 function confirmDeletion(message) {

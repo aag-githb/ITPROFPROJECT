@@ -24,6 +24,8 @@ const subjectEditMessage = document.getElementById("subject-edit-msg");
 
 let currentRole = "";
 let currentSubject = null;
+let currentTopics = [];
+let subjectToc = [];
 
 function openSubjectEdit() {
   if (!currentSubject) return;
@@ -123,7 +125,59 @@ function showMessage(message, isError = false) {
   messageEl.style.color = isError ? "#c62828" : "#237547";
 }
 
+function renderSubjectToc() {
+  const tocList = document.getElementById("subject-toc-list");
+  tocList.replaceChildren();
+  subjectToc.forEach((entry, index) => {
+    const item = document.createElement("li");
+    item.className = "topic-toc-item";
+    const title = document.createElement("input");
+    title.type = "text";
+    title.value = entry.title;
+    title.maxLength = 200;
+    title.disabled = currentRole !== "faculty";
+    title.addEventListener("input", () => { entry.title = title.value; });
+    item.append(title);
+    if (currentRole === "faculty") {
+      const controls = document.createElement("span");
+      controls.className = "topic-toc-controls";
+      ["Up", "Down"].forEach((label, direction) => {
+        const button = el("button", label, "btn secondary-button");
+        button.type = "button";
+        button.disabled = direction ? index === subjectToc.length - 1 : index === 0;
+        button.addEventListener("click", () => {
+          const target = direction ? index + 1 : index - 1;
+          [subjectToc[index], subjectToc[target]] = [subjectToc[target], subjectToc[index]];
+          renderSubjectToc();
+        });
+        controls.append(button);
+      });
+      item.append(controls);
+    }
+    tocList.append(item);
+  });
+}
+
+async function openSubjectToc() {
+  const modal = document.getElementById("subject-toc-modal");
+  const message = document.getElementById("subject-toc-message");
+  message.textContent = "";
+  try {
+    const result = await api(`/subjects/${encodeURIComponent(subjectId)}/toc`);
+    subjectToc = result.body.toc || currentTopics.map(topic => ({
+      topic_id: topic.id,
+      title: topic.title
+    }));
+    renderSubjectToc();
+    modal.showModal();
+  } catch (error) {
+    message.textContent = error.message || "Unable to load table of contents.";
+    modal.showModal();
+  }
+}
+
 function renderTopics(topics) {
+  currentTopics = topics;
   list.replaceChildren();
 
   if (!topics.length) {
@@ -229,6 +283,7 @@ async function loadTopics() {
     }
 
     currentSubject = subject;
+    currentTopics = topics;
     titleEl.textContent = subject.name || "Topics";
     crumbEl.textContent = subject.name || "Subject";
 
@@ -270,6 +325,7 @@ async function initializePage() {
 
     const user = result.body;
     currentRole = String(user.role || "").trim().toLowerCase();
+    document.getElementById("save-subject-toc").hidden = currentRole !== "faculty";
 
     // Show the entire Add a Topic section to faculty only.
     if (addBox) {
@@ -409,3 +465,29 @@ document.getElementById("open-topic-modal")?.addEventListener("click", () => {
 });
 document.getElementById("close-topic-modal")?.addEventListener("click", () => topicModal?.close());
 document.getElementById("cancel-topic-modal")?.addEventListener("click", () => topicModal?.close());
+
+document.getElementById("open-subject-toc")?.addEventListener("click", openSubjectToc);
+document.getElementById("close-subject-toc")?.addEventListener(
+  "click", () => document.getElementById("subject-toc-modal").close()
+);
+document.getElementById("cancel-subject-toc")?.addEventListener(
+  "click", () => document.getElementById("subject-toc-modal").close()
+);
+document.getElementById("subject-toc-form")?.addEventListener("submit", async event => {
+  event.preventDefault();
+  const message = document.getElementById("subject-toc-message");
+  const saveButton = document.getElementById("save-subject-toc");
+  saveButton.disabled = true;
+  try {
+    const result = await api(`/subjects/${encodeURIComponent(subjectId)}/toc`, {
+      toc: subjectToc.map(entry => ({ topic_id: entry.topic_id, title: entry.title.trim() }))
+    }, "PUT");
+    if (!result.ok) throw new Error(result.body?.error || "Unable to save table of contents.");
+    subjectToc = result.body.toc || subjectToc;
+    message.textContent = "Table of contents saved.";
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    saveButton.disabled = false;
+  }
+});

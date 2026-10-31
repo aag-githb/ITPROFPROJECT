@@ -154,6 +154,18 @@
 .subject-join-code{margin:.8rem 0 0;font-size:.85rem;opacity:.8}
 .subject .topic-action{margin-top:1rem;width:auto}
 .subject-tabs{margin-top:4px}
+.subject-toc h2{margin:0 0 6px;color:var(--periwinkle)}
+.toc-description{margin:0 0 18px;opacity:.75}
+.subject-toc-modal{width:min(720px,calc(100% - 32px));border:0;border-radius:22px;padding:0;background:var(--periwinkle);color:var(--black);box-shadow:0 30px 90px rgba(0,0,0,.65)}
+.subject-toc-modal::backdrop{background:rgba(4,6,7,.75)}
+.subject-toc-modal form{padding:26px}
+.subject-toc-modal h2{color:var(--blue);margin:0 0 18px}
+.subject-toc-modal .topic-toc-list{display:grid;gap:10px;padding-left:28px}
+.subject-toc-modal .topic-toc-item{display:flex;align-items:center;gap:10px;padding-left:8px}
+.subject-toc-modal .topic-toc-item input{flex:1;min-width:0;padding:10px;border:1px solid #9ca3af;border-radius:8px;font:inherit;color:#111827;background:#fff}
+.subject-toc-modal .topic-toc-item input:disabled{border-color:transparent;background:transparent}
+.subject-toc-modal .topic-toc-controls{display:flex;gap:6px}
+.subject-toc-modal .topic-toc-controls .btn{width:auto;padding:7px 10px}
 .people-panel{padding:24px 0}
 .subject-management-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 24px}
 .subject-edit-button,.danger-button{width:auto;padding:10px 20px}
@@ -176,6 +188,17 @@
 .person-row .btn{flex:0 0 auto}
 .topic-view-description{max-width:70ch;margin:-8px 0 28px;font-size:1.05rem;opacity:.8}
 .lesson-view-actions{display:flex;justify-content:flex-end;margin:-14px 0 18px}
+.toc-modal{width:min(720px,calc(100% - 32px));border:0;border-radius:22px;padding:0;background:var(--periwinkle);color:var(--black);box-shadow:0 30px 90px rgba(0,0,0,.65)}
+.toc-modal::backdrop{background:rgba(4,6,7,.75)}
+.toc-modal form{padding:26px}
+.toc-modal h2{color:var(--blue);margin:0 0 18px}
+.toc-message{min-height:1.4em;color:#176b3a}
+.topic-toc-list{display:grid;gap:10px;padding-left:28px}
+.topic-toc-item{display:flex;align-items:center;gap:10px;padding-left:8px}
+.topic-toc-item input{flex:1;min-width:0;padding:10px;border:1px solid #9ca3af;border-radius:8px;font:inherit;color:#111827;background:#fff}
+.topic-toc-item input:disabled{border-color:transparent;background:transparent}
+.topic-toc-controls{display:flex;gap:6px}
+.topic-toc-controls .btn{width:auto;padding:7px 10px}
 .lesson-quiz-action{display:flex;justify-content:center;margin:30px 0 8px}
 .lesson-quiz-action .btn{width:auto;min-width:180px;text-align:center}
 .subject-modal{width:min(820px,calc(100% - 32px));border:0;border-radius:22px;padding:0;background:var(--periwinkle);color:var(--black);box-shadow:0 30px 90px rgba(0,0,0,.65)}
@@ -271,4 +294,513 @@ a.subject:focus-visible{outline:3px solid var(--magenta);outline-offset:3px}
 @media (max-width:600px){
   .privacy-card__header{padding:20px 20px 14px}
   .privacy-card__content{padding:6px 20px 20px;font-size:.88rem}
+}
+
+
+/* ==========================================
+   ITCLASSROOM - TABLE OF CONTENTS PAGE
+   ========================================== */
+
+.subject-toc {
+    margin-top: 30px;
+    padding: 30px;
+    background: rgba(4, 6, 7, 0.65);
+    border: 1px solid rgba(227, 217, 252, 0.18);
+    border-radius: 24px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+}
+
+.subject-toc h2 {
+    color: var(--periwinkle);
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.toc-description {
+    color: var(--periwinkle);
+    opacity: 0.65;
+    font-size: 0.92rem;
+    margin-bottom: 25px;
+}
+
+/* Topic list */
+
+.toc {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc li {
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 20px;
+    min-height: 85px;
+    background: rgba(227, 217, 252, 0.06);
+    border: 1px solid rgba(227, 217, 252, 0.13);
+    border-radius: 18px;
+    transition: 0.25s ease;
+}
+
+.toc li:hover {
+    background: rgba(73, 40, 194, 0.25);
+    border-color: var(--magenta);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(73, 40, 194, 0.18);
+}
+
+/* Topic number */
+
+.toc .n {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, var(--periwinkle), #c4a5ff);
+    color: var(--blue);
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Topic title and description */
+
+.toc .t {
+    min-width: 0;
+}
+
+.toc .t strong {
+    display: block;
+    color: var(--periwinkle);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+}
+
+.toc .t span {
+    display: block;
+    color: var(--periwinkle);
+    opacity: 0.6;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* Topic status */
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 7px 13px;
+    border-radius: 50px;
+}
+
+.pill.pass {
+    background: rgba(227, 217, 252, 0.15);
+    color: var(--periwinkle);
+    border: 1px solid var(--periwinkle);
+}
+
+.pill.open {
+    background: var(--magenta);
+    color: var(--black);
+}
+
+.pill.lock {
+    background: rgba(227, 217, 252, 0.07);
+    color: var(--periwinkle);
+    border: 1px solid rgba(227, 217, 252, 0.2);
+}
+
+/* Add topic button */
+
+.add-topic-button {
+    max-width: 190px;
+    background: linear-gradient(135deg, var(--blue), var(--velvet));
+    border: 1px solid rgba(227, 217, 252, 0.2);
+    margin-top: 15px;
+}
+
+.add-topic-button:hover {
+    background: var(--magenta);
+    color: var(--black);
+}
+
+/* View TOC button */
+
+#open-subject-toc {
+    width: auto;
+    padding: 11px 20px;
+    margin-top: 12px;
+    border: 1px solid rgba(227, 217, 252, 0.2);
+}
+
+/* Empty state */
+
+.toc + .empty,
+.empty {
+    color: var(--periwinkle);
+    opacity: 0.65;
+    text-align: center;
+    padding: 35px 15px;
+}
+
+/* Breadcrumbs */
+
+.crumbs {
+    color: var(--periwinkle);
+    opacity: 0.7;
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+}
+
+.crumbs a {
+    color: var(--magenta);
+    text-decoration: none;
+}
+
+.crumbs a:hover {
+    text-decoration: underline;
+}
+
+/* Subject metadata */
+
+.meta {
+    color: var(--periwinkle);
+    opacity: 0.7;
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .subject-toc {
+        padding: 20px 14px;
+    }
+
+    .toc li {
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .toc .n {
+        width: 42px;
+        height: 42px;
+    }
+
+    .toc li .pill {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .subject-toc h2 {
+        font-size: 1.5rem;
+    }
+
+    .add-topic-button {
+        max-width: 100%;
+    }
+}
+
+/* ==========================================
+   ITCLASSROOM - SUBJECT TABLE OF CONTENTS
+   ========================================== */
+
+.subject-toc-modal {
+    width: min(760px, calc(100% - 32px));
+    max-height: min(85vh, 850px);
+    border: 1px solid rgba(73, 40, 194, 0.15);
+    border-radius: 26px;
+    padding: 0;
+    overflow: hidden;
+    background: #ffffff;
+    color: #17152b;
+    box-shadow: 0 30px 100px rgba(4, 6, 7, 0.55);
+    animation: tocModalIn 0.25s ease;
+}
+
+.subject-toc-modal::backdrop {
+    background: rgba(4, 6, 7, 0.78);
+    backdrop-filter: blur(7px);
+}
+
+.subject-toc-modal form {
+    padding: 30px;
+    overflow-y: auto;
+    max-height: 85vh;
+}
+
+/* Header */
+
+.subject-toc-modal .topic-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee9fa;
+}
+
+.subject-toc-modal h2 {
+    margin: 0;
+    color: #4928c2;
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.subject-toc-modal .topic-modal-header::after {
+    content: "Manage your subject topics";
+    display: none;
+}
+
+/* Close button */
+
+.subject-toc-modal .modal-close {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 12px;
+    background: #f3efff;
+    color: #4928c2;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.subject-toc-modal .modal-close:hover {
+    background: #4928c2;
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+/* Topic list */
+
+.subject-toc-modal .topic-toc-list {
+    display: grid;
+    gap: 12px;
+    margin: 22px 0;
+    padding: 0;
+    list-style-position: inside;
+    counter-reset: toc-counter;
+}
+
+/* Individual topic */
+
+.subject-toc-modal .topic-toc-item {
+    counter-increment: toc-counter;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px;
+    border: 1px solid #ebe6f8;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #faf9ff, #f5f1ff);
+    transition: all 0.2s ease;
+}
+
+.subject-toc-modal .topic-toc-item:hover {
+    border-color: #bba6f5;
+    background: #f1ebff;
+    box-shadow: 0 5px 18px rgba(73, 40, 194, 0.08);
+}
+
+/* Topic number */
+
+.subject-toc-modal .topic-toc-item::before {
+    content: counter(toc-counter, decimal-leading-zero);
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #e8ddff;
+    color: #4928c2;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+/* Topic input */
+
+.subject-toc-modal .topic-toc-item input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid #e2dcf0;
+    border-radius: 11px;
+    background: #ffffff;
+    color: #17152b;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.subject-toc-modal .topic-toc-item input:hover {
+    border-color: #bba6f5;
+}
+
+.subject-toc-modal .topic-toc-item input:focus {
+    border-color: #4928c2;
+    box-shadow: 0 0 0 4px rgba(73, 40, 194, 0.1);
+}
+
+/* Open topic link */
+
+.subject-toc-modal .topic-toc-open {
+    color: #4928c2;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.subject-toc-modal .topic-toc-open:hover {
+    color: #bf40fa;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Reorder controls */
+
+.subject-toc-modal .topic-toc-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.subject-toc-modal .topic-toc-controls .btn {
+    display: grid;
+    place-items: center;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border: 1px solid #e3dcf5;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #4928c2;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+}
+
+.subject-toc-modal .topic-toc-controls .btn:hover:not(:disabled) {
+    background: #4928c2;
+    border-color: #4928c2;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.subject-toc-modal .topic-toc-controls .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Action buttons */
+
+.subject-toc-modal .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #eee9fa;
+}
+
+.subject-toc-modal .modal-actions .btn {
+    width: auto;
+    min-width: 115px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.subject-toc-modal #save-subject-toc {
+    background: linear-gradient(135deg, #4928c2, #7a42dc);
+    color: #ffffff;
+    box-shadow: 0 5px 15px rgba(73, 40, 194, 0.2);
+}
+
+.subject-toc-modal #save-subject-toc:hover {
+    background: linear-gradient(135deg, #5b2a62, #bf40fa);
+}
+
+.subject-toc-modal #cancel-subject-toc {
+    background: #f1eff6;
+    color: #4b4560;
+}
+
+.subject-toc-modal #cancel-subject-toc:hover {
+    background: #e5def4;
+}
+
+/* Message */
+
+.subject-toc-modal .msg {
+    color: #dc2626;
+    font-size: 0.88rem;
+}
+
+/* Animation */
+
+@keyframes tocModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+    .subject-toc-modal {
+        border-radius: 20px;
+    }
+
+    .subject-toc-modal form {
+        padding: 20px 16px;
+    }
+
+    .subject-toc-modal h2 {
+        font-size: 1.45rem;
+    }
+
+    .subject-toc-modal .topic-toc-item {
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 12px;
+    }
+
+    .subject-toc-modal .topic-toc-item input {
+        flex: 1 1 calc(100% - 55px);
+    }
+
+    .subject-toc-modal .topic-toc-controls {
+        margin-left: auto;
+    }
+
+    .subject-toc-modal .modal-actions .btn {
+        min-width: 0;
+        flex: 1;
+    }
 }

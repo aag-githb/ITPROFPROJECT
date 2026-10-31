@@ -37,11 +37,12 @@
     <p class="msg" id="list-msg" role="alert"></p>
 
     <nav class="faculty-tabs subject-tabs" aria-label="Subject sections">
-      <a class="faculty-tab active" id="lesson-tab" href="#" aria-current="page">Lesson</a>
+      <a class="faculty-tab active" id="lesson-tab" href="#" aria-current="page">Table of contents</a>
       <a class="faculty-tab" id="people-tab" href="#">People</a>
     </nav>
 
     <section id="lesson-panel">
+    <button class="btn secondary-button" id="open-subject-toc" type="button">View table of contents</button>
     <!-- Faculty only -->
     <section class="add" id="add-box">
       <button class="btn add-topic-button" id="open-topic-modal" type="button">+ Add topic</button>
@@ -49,8 +50,11 @@
 
     <p class="msg" id="quiz-msg" role="alert"></p>
 
-    <ul class="toc" id="list"></ul>
-    <p class="empty" id="empty" hidden></p>
+    <section class="subject-toc" aria-labelledby="toc-heading">
+      
+      <ul class="toc" id="list" aria-live="polite"></ul>
+      <p class="empty" id="empty" hidden></p>
+    </section>
     </section>
 
     <section id="people-panel" class="people-panel" hidden>
@@ -139,6 +143,21 @@
     <div class="modal-actions">
       <button class="btn secondary-button" type="button" id="cancel-topic-modal">Cancel</button>
       <button class="btn" type="submit">Create topic</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="subject-toc-modal" id="subject-toc-modal" aria-labelledby="subject-toc-title">
+  <form method="dialog" id="subject-toc-form">
+    <div class="topic-modal-header">
+      <h2 id="subject-toc-title">Table of contents</h2>
+      <button class="modal-close" id="close-subject-toc" type="button" aria-label="Close">×</button>
+    </div>
+    <p id="subject-toc-message" class="msg" role="alert"></p>
+    <ol id="subject-toc-list" class="topic-toc-list"></ol>
+    <div class="modal-actions">
+      <button class="btn secondary-button" id="cancel-subject-toc" type="button">Close</button>
+      <button class="btn" id="save-subject-toc" type="submit" hidden>Save changes</button>
     </div>
   </form>
 </dialog>

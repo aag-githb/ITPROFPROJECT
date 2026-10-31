@@ -28,6 +28,7 @@
     <h1 id="view-title">Loading lesson...</h1>
     <p id="view-description" class="topic-view-description"></p>
     <div class="lesson-view-actions">
+      <button class="btn topic-action" id="open-toc" type="button">Table of contents</button>
       <a class="btn topic-action" id="edit-lesson" href="#" hidden>Edit lesson</a>
     </div>
 
@@ -61,6 +62,20 @@
     </div>
   </main>
 </div>
+<dialog class="toc-modal" id="toc-modal" aria-labelledby="toc-modal-title">
+  <form method="dialog" id="toc-form">
+    <div class="topic-modal-header">
+      <h2 id="toc-modal-title">Table of contents</h2>
+      <button class="modal-close" id="close-toc" type="button" aria-label="Close">×</button>
+    </div>
+    <p id="toc-message" class="toc-message" role="alert"></p>
+    <ol id="topic-toc-list" class="topic-toc-list"></ol>
+    <div class="modal-actions">
+      <button class="btn secondary-button" id="cancel-toc" type="button">Close</button>
+      <button class="btn" id="save-toc" type="submit" hidden>Save changes</button>
+    </div>
+  </form>
+</dialog>
 <script src="js/auth.js"></script>
 <script src="js/topic-view.js"></script>
 </body>

@@ -7,6 +7,8 @@ const subjectId = params.get("subject");
 
 let slides = [];
 let slideIndex = 0;
+let topicToc = [];
+let currentUserRole = "";
 
 async function request(path) {
   const response = await fetch(VIEW_API + path, {
@@ -20,8 +22,51 @@ async function request(path) {
       data.error || `Unable to load lesson (${response.status})`
     );
   }
-
   return data;
+}
+
+function renderTopicToc() {
+  const list = document.getElementById("topic-toc-list");
+  list.replaceChildren();
+  topicToc.forEach((entry, index) => {
+    const item = document.createElement("li");
+    item.className = "topic-toc-item";
+    const title = document.createElement("input");
+    title.type = "text";
+    title.value = entry.title;
+    title.maxLength = 200;
+    title.disabled = currentUserRole !== "faculty";
+    title.setAttribute("aria-label", `Topic ${index + 1} title`);
+    title.addEventListener("input", () => {
+      entry.title = title.value;
+    });
+    item.append(title);
+    if (currentUserRole === "faculty") {
+      const controls = document.createElement("span");
+      controls.className = "topic-toc-controls";
+      ["Move up", "Move down"].forEach((label, direction) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn secondary-button";
+        button.textContent = direction ? "Down" : "Up";
+        button.disabled = direction ? index === topicToc.length - 1 : index === 0;
+        button.addEventListener("click", () => {
+          const target = direction ? index + 1 : index - 1;
+          [topicToc[index], topicToc[target]] = [topicToc[target], topicToc[index]];
+          renderTopicToc();
+        });
+        controls.append(button);
+      });
+      item.append(controls);
+    }
+    list.append(item);
+  });
+}
+
+async function loadTopicToc() {
+  const result = await request(`/subjects/${encodeURIComponent(subjectId)}/toc`);
+  topicToc = Array.isArray(result.toc) ? result.toc : [];
+  renderTopicToc();
 }
 
 function textElement(tag, text) {
@@ -82,6 +127,7 @@ async function init() {
 
   try {
     const user = await request("/me");
+    currentUserRole = user.role || "";
     const data = await request(
       `/topics/${encodeURIComponent(topicId)}`
     );
@@ -90,6 +136,13 @@ async function init() {
 
     if (!topic) {
       throw new Error("Topic not found.");
+    }
+    try {
+      await loadTopicToc();
+    } catch (error) {
+      console.error("Failed to load table of contents:", error);
+      document.getElementById("toc-message").textContent =
+        "The table of contents could not be loaded.";
     }
 
     titleElement.textContent = topic.title || "Untitled Topic";
@@ -116,6 +169,7 @@ async function init() {
         `topic-editor.html?id=${encodeURIComponent(topicId)}` +
         `&subject=${encodeURIComponent(subjectId)}`;
       editLink.hidden = false;
+      document.getElementById("save-toc").hidden = false;
     } else if (topic.has_quiz) {
       const quizAction = document.getElementById("lesson-quiz-action");
       const quizLink = document.getElementById("start-quiz");
@@ -175,6 +229,40 @@ document.getElementById("next-slide").addEventListener("click", () => {
   if (slides.length) {
     slideIndex = (slideIndex + 1) % slides.length;
     renderSlide();
+  }
+});
+
+const tocModal = document.getElementById("toc-modal");
+document.getElementById("open-toc").addEventListener("click", () => {
+  renderTopicToc();
+  tocModal.showModal();
+});
+document.getElementById("close-toc").addEventListener("click", () => tocModal.close());
+document.getElementById("cancel-toc").addEventListener("click", () => tocModal.close());
+document.getElementById("toc-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const message = document.getElementById("toc-message");
+  const saveButton = document.getElementById("save-toc");
+  saveButton.disabled = true;
+  message.textContent = "";
+  try {
+    const result = await request(`/subjects/${encodeURIComponent(subjectId)}/toc`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        toc: topicToc.map(entry => ({
+          topic_id: entry.topic_id,
+          title: entry.title.trim(),
+        })),
+      }),
+    });
+    topicToc = result.toc;
+    renderTopicToc();
+    message.textContent = "Table of contents saved.";
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    saveButton.disabled = false;
   }
 });
 

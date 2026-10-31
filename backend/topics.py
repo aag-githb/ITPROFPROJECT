@@ -121,6 +121,27 @@ def init_topics(app, db):
     def topic_order(topic):
         return list(topics.find({"subject_id": topic["subject_id"]}).sort("_id", 1))
 
+    def subject_toc(subject):
+        configured = {
+            str(item.get("topic_id")): item
+            for item in subject.get("toc", [])
+            if isinstance(item, dict) and item.get("topic_id")
+        }
+        entries = []
+        next_position = len(configured)
+        for topic in topics.find({"subject_id": subject["_id"]}).sort("_id", 1):
+            settings = configured.get(str(topic["_id"]), {})
+            position = settings.get("position")
+            if not isinstance(position, int):
+                position = next_position
+                next_position += 1
+            entries.append({
+                "topic_id": str(topic["_id"]),
+                "title": settings.get("title") or topic.get("title", ""),
+                "position": position,
+            })
+        return sorted(entries, key=lambda entry: (entry["position"], entry["topic_id"]))
+
     def passed_topic(username, topic):
         return bool(progress.find_one({
             "username": username, "topic_id": topic["_id"], "passed": True
@@ -513,6 +534,58 @@ def init_topics(app, db):
                 for t in found
             ],
         )
+
+    @app.get("/api/subjects/<subject_id>/toc")
+    @require_login
+    def get_subject_toc(user, subject_id):
+        subject = get_subject(subject_id)
+        if not subject:
+            return jsonify(error="Subject not found"), 404
+        if user.get("role") == "faculty" and subject.get("created_by") != user["username"]:
+            return jsonify(error="You can only view your own subjects"), 403
+        if not student_enrolled(user, subject):
+            return jsonify(error="Join this subject before viewing its table of contents"), 403
+        return jsonify(toc=subject_toc(subject))
+
+    @app.put("/api/subjects/<subject_id>/toc")
+    @require_login
+    @require_faculty
+    def update_subject_toc(user, subject_id):
+        subject = get_subject(subject_id)
+        data = request.get_json(silent=True) or {}
+        entries = data.get("toc")
+        if not subject:
+            return jsonify(error="Subject not found"), 404
+        if not isinstance(entries, list):
+            return jsonify(error="toc must be a list"), 400
+
+        valid_topics = {
+            str(topic["_id"]): topic
+            for topic in topics.find({"subject_id": subject["_id"]})
+        }
+        if len(entries) != len(valid_topics):
+            return jsonify(error="The table of contents must include every subject topic"), 400
+
+        cleaned = []
+        seen = set()
+        for position, entry in enumerate(entries):
+            if not isinstance(entry, dict):
+                return jsonify(error="Invalid table of contents entry"), 400
+            topic_id = str(entry.get("topic_id", ""))
+            title = entry.get("title", "")
+            if topic_id not in valid_topics or topic_id in seen:
+                return jsonify(error="Invalid or duplicate topic in table of contents"), 400
+            if not isinstance(title, str) or not title.strip() or len(title.strip()) > 200:
+                return jsonify(error="Each table of contents title is required and must be 200 characters or fewer"), 400
+            seen.add(topic_id)
+            cleaned.append({
+                "topic_id": topic_id,
+                "title": title.strip(),
+                "position": position,
+            })
+
+        subjects.update_one({"_id": subject["_id"]}, {"$set": {"toc": cleaned}})
+        return jsonify(ok=True, toc=cleaned)
 
     @app.post("/api/subjects/<subject_id>/topics")
     @require_login
