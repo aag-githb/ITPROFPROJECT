@@ -40,6 +40,16 @@ app = Flask(
     static_url_path="",
 )
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-to-something-random")
+frontend_url = os.environ.get(
+    "FRONTEND_URL",
+    "https://itprofproject-frontend.vercel.app",
+).rstrip("/")
+cookie_secure = os.environ.get("SESSION_COOKIE_SECURE", "false").lower() == "true"
+app.config.update(
+    SESSION_COOKIE_SECURE=cookie_secure,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="None" if cookie_secure else "Lax",
+)
 
 
 @app.after_request
@@ -59,8 +69,9 @@ CORS(
     supports_credentials=True,
     origins=[
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
-    ]
+        "http://127.0.0.1:5500",
+        frontend_url,
+    ],
 )
 
 mongo_client = MongoClient(
