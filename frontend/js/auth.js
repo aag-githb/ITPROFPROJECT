@@ -1,4 +1,6 @@
-const API = `http://${location.hostname}:5000/api`;
+const API = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  ? "http://localhost:5000/api"
+  : "https://itclassroom-backend.onrender.com/api";
 
 async function api(path, data, method) {
   const requestMethod = method || (data ? "POST" : "GET");
@@ -86,10 +88,7 @@ async function checkSession() {
   if (!who) return;
 
   try {
-    const res = await fetch(
-      `http://${location.hostname}:5000/api/me`,
-      { credentials: "include" }
-    );
+    const res = await fetch(`${API}/me`, { credentials: "include" });
 
     if (!res.ok) {
       who.textContent = "Not logged in";
@@ -102,7 +101,7 @@ async function checkSession() {
 
     if (logout) {
       logout.addEventListener("click", async () => {
-        await fetch(`http://${location.hostname}:5000/api/logout`, {
+        await fetch(`${API}/logout`, {
           method: "POST",
           credentials: "include"
         });

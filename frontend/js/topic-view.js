@@ -1,5 +1,7 @@
 
-const VIEW_API = `http://${location.hostname}:5000/api`;
+const VIEW_API = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  ? "http://localhost:5000/api"
+  : "https://itclassroom-backend.onrender.com/api";
 
 const params = new URLSearchParams(location.search);
 const topicId = params.get("id");
@@ -193,7 +195,7 @@ async function init() {
         const link = document.createElement("a");
 
         // file.url already starts with /api, so don't add /api twice.
-        link.href = `http://${location.hostname}:5000${file.url}`;
+        link.href = `https://itclassroom-backend.onrender.com${file.url}`;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.textContent = file.name || "Open presentation";

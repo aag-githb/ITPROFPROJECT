@@ -1,4 +1,6 @@
-const DASHBOARD_API = `http://${location.hostname}:5000/api`;
+const DASHBOARD_API = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  ? "http://localhost:5000/api"
+  : "https://itclassroom-backend.onrender.com/api";
 const rowsEl = document.getElementById("score-rows");
 const emptyEl = document.getElementById("empty");
 const messageEl = document.getElementById("dashboard-message");

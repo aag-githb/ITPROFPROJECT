@@ -1,4 +1,6 @@
-const STUDENT_QUIZ_API = `http://${location.hostname}:5000/api`;
+const STUDENT_QUIZ_API = location.hostname === "localhost" || location.hostname === "127.0.0.1"
+  ? "http://localhost:5000/api"
+  : "https://itclassroom-backend.onrender.com/api";
 const studentParams = new URLSearchParams(location.search);
 const studentTopicId = studentParams.get("id");
 const studentSubjectId = studentParams.get("subject");
