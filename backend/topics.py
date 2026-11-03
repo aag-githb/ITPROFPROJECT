@@ -27,12 +27,16 @@ def init_topics(app, db):
     attempts = db["quiz_attempts"]
     progress = db["student_progress"]
 
-    cloudinary.config(
-        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.environ.get("CLOUDINARY_API_KEY"),
-        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-        secure=True,
-    )
+    cloudinary_url = os.environ.get("CLOUDINARY_URL")
+    if cloudinary_url:
+        cloudinary.config(cloudinary_url=cloudinary_url, secure=True)
+    else:
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+            secure=True,
+        )
 
     def cloudinary_presentation_url(presentation):
         stored_url = presentation.get("url", "")
@@ -146,6 +150,8 @@ def init_topics(app, db):
         return datetime.now(timezone.utc)
 
     def cloudinary_ready():
+        if os.environ.get("CLOUDINARY_URL"):
+            return True
         return all(
             os.environ.get(name)
             for name in (
