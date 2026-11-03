@@ -11,10 +11,8 @@ import secrets
 import string
 import hashlib
 import json
-import smtplib
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-from email.message import EmailMessage
 from datetime import datetime, timezone
 from pathlib import Path
 from markupsafe import escape
@@ -122,16 +120,12 @@ init_topics(app, db)
 
 # Roles people can pick when they register. "admin" (or anything else) is never allowed here.
 SELF_REGISTER_ROLES = ("student", "faculty")
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_SENDER = os.environ.get("SMTP_SENDER", "")
-SMTP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD", "")
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
-MAIL_SENDER = os.environ.get("MAIL_SENDER", SMTP_SENDER)
+MAIL_SENDER = os.environ.get("MAIL_SENDER", "")
 
 
 def send_verification_email(recipient, token):
-    if not BREVO_API_KEY and (not SMTP_SENDER or not SMTP_PASSWORD):
+    if not BREVO_API_KEY or not MAIL_SENDER:
         raise RuntimeError(
             "Email delivery is not configured. Set BREVO_API_KEY and MAIL_SENDER."
         )
@@ -174,16 +168,6 @@ def send_verification_email(recipient, token):
             raise RuntimeError(
                 f"Could not reach Brevo: {error.reason}"
             ) from error
-
-    message = EmailMessage()
-    message["Subject"] = subject
-    message["From"] = SMTP_SENDER
-    message["To"] = recipient
-    message.set_content(content)
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
-        server.starttls()
-        server.login(SMTP_SENDER, SMTP_PASSWORD)
-        server.send_message(message)
 
 
 @app.post("/api/register")
