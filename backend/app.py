@@ -48,6 +48,7 @@ frontend_origins = [
     ).split(",")
     if origin.strip()
 ]
+frontend_url = frontend_origins[0] if frontend_origins else "http://localhost:5500"
 cookie_secure_setting = os.environ.get("SESSION_COOKIE_SECURE")
 cookie_secure = (
     cookie_secure_setting.lower() == "true"
@@ -127,13 +128,17 @@ SMTP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD", "")
 def send_verification_email(recipient, token):
     if not SMTP_SENDER or not SMTP_PASSWORD:
         raise RuntimeError("Email delivery is not configured")
+    backend_url = (
+        os.environ.get("BACKEND_URL", "").strip().rstrip("/")
+        or request.host_url.rstrip("/")
+    )
     message = EmailMessage()
     message["Subject"] = "Verify your ITClassroom email"
     message["From"] = SMTP_SENDER
     message["To"] = recipient
     message.set_content(
         "Verify your ITClassroom account by opening this link:\n\n"
-        f"http://{request.host}/api/verify-email/{token}\n\n"
+        f"{backend_url}/api/verify-email/{token}\n\n"
         "This link expires in 24 hours."
     )
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
@@ -208,9 +213,9 @@ def verify_email(token):
         status_class = "success" if success else "error"
         status_symbol = "✓" if success else "!"
         login_link = (
-            '<a class="button" href="/login.html">Continue to login</a>'
+            f'<a class="button" href="{escape(frontend_url)}/login.html">Continue to login</a>'
             if success else
-            '<a class="button secondary" href="/login.html">Return to login</a>'
+            f'<a class="button secondary" href="{escape(frontend_url)}/login.html">Return to login</a>'
         )
         return f"""<!doctype html>
 <html lang="en">
