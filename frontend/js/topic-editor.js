@@ -129,6 +129,13 @@ function collectSlides() {
   }));
 }
 
+function presentationUrl(fileUrl, apiBase) {
+  const url = String(fileUrl || "").replace(/^https\/\//i, "https://");
+  return /^https?:\/\//i.test(url)
+    ? url
+    : apiBase + url.replace(/^\/api/, "");
+}
+
 function renderPresentations() {
   const list = document.getElementById("presentation-list");
   const empty = document.getElementById("presentation-empty");
@@ -139,9 +146,7 @@ function renderPresentations() {
     const item = document.createElement("li");
     const link = document.createElement("a");
 
-    link.href = file.url.startsWith("http")
-      ? file.url
-      : EDITOR_API + file.url.replace(/^\/api/, "");
+    link.href = presentationUrl(file.url, EDITOR_API);
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     link.textContent = file.name || "Presentation";

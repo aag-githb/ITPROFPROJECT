@@ -44,7 +44,12 @@ def init_topics(app, db):
             match = re.search(r"/v(\d+)/", presentation.get("url", ""))
             version = match.group(1) if match else None
         if not public_id or not version:
-            return presentation.get("url", "")
+            return re.sub(
+                r"^https//",
+                "https://",
+                presentation.get("url", ""),
+                flags=re.IGNORECASE,
+            )
 
         url, _ = cloudinary.utils.cloudinary_url(
             public_id,
