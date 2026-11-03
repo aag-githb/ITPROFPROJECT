@@ -10,65 +10,65 @@
 <body>
 <div class="wrap">
 
-  <header>
+   <header>
     <a class="brand" href="#top"><span class="star" aria-hidden="true"></span>ITClassroom</a>
     <nav aria-label="Main">
-      <a href="#subjects">Subjects</a>
-      <a href="#topics">Topics</a>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
       <a href="#rules">Quiz rules</a>
       <a href="#login">Log in</a>
     </nav>
   </header>
 
-  <button class="back-button" type="button" data-back-button data-fallback="login.html">
-    ← Back
-  </button>
+  
 
   <div class="grid" id="top">
     <main>
-      <h1>Learn a topic, pass the quiz, move on.</h1>
-      <p class="lead">Read each lesson, take a timed quiz, and unlock the next topic when you score 75% or higher. Faculty can build lessons and quizzes right inside.</p>
+      <h1>Learn, take the quiz, and keep moving forward.</h1>
+      <p class="lead">ITClassroom is an online learning space for students and faculty. Read lessons, take timed quizzes, and unlock new lessons as you progress. Faculty can build lessons and quizzes right inside.</p>
 
-      <section id="subjects" aria-labelledby="h-sub">
-        <h2 id="h-sub">Your subjects</h2>
+      <section id="about" aria-labelledby="h-about">
+        <h2 id="h-about">What is ITClassroom?</h2>
+        <p>ITClassroom brings lessons, quizzes and progress tracking into one simple place. Students learn at their own pace, and faculty get the tools to create and manage their classes without extra software.</p>
+      </section>
+
+      <section id="features" aria-labelledby="h-feat">
+        <h2 id="h-feat">Built for everyone in the class</h2>
         <div class="subjects">
           <article class="subject">
-            <span class="code">CS 101</span>
-            <h3>Introduction to Computing</h3>
-            <dl><dt>Term</dt><dd>1st Semester</dd><dt>Year</dt><dd>2026–2027</dd></dl>
-            <div class="bar" role="img" aria-label="50% of topics passed"><i style="width:50%"></i></div>
+            <span class="code">Students</span>
+            <h3>Learn at your own pace</h3>
+            <p>Read lessons, take quizzes and track your progress from any device.</p>
           </article>
           <article class="subject">
-            <span class="code">MATH 102</span>
-            <h3>Discrete Mathematics</h3>
-            <dl><dt>Term</dt><dd>1st Semester</dd><dt>Year</dt><dd>2026–2027</dd></dl>
-            <div class="bar" role="img" aria-label="17% of topics passed"><i style="width:17%"></i></div>
+            <span class="code">Faculty</span>
+            <h3>Teach with less hassle</h3>
+            <p>Create lessons and quizzes, then see how your students are doing.</p>
           </article>
         </div>
       </section>
 
-      <section id="topics" aria-labelledby="h-top">
-        <h2 id="h-top">Introduction to Computing: topics</h2>
+      <section id="how" aria-labelledby="h-how">
+        <h2 id="h-how">How it works</h2>
         <ol class="toc">
-          <li><span class="n">1</span><div class="t"><strong>What is a computer?</strong><span>Text, slides and summary</span></div><span class="pill pass">Passed 90%</span></li>
-          <li><span class="n">2</span><div class="t"><strong>Hardware and software</strong><span>Text, slides and summary</span></div><span class="pill pass">Passed 80%</span></li>
-          <li><span class="n">3</span><div class="t"><strong>Number systems</strong><span>Quiz ready: 20 items, 10 minutes</span></div><span class="pill open">Start quiz</span></li>
-          <li class="locked"><span class="n">4</span><div class="t"><strong>Networks and the internet</strong><span>Pass topic 3 to unlock</span></div><span class="pill lock">Locked</span></li>
-          <li class="locked"><span class="n">5</span><div class="t"><strong>Data and privacy</strong><span>Pass topic 4 to unlock</span></div><span class="pill lock">Locked</span></li>
-          <li class="locked"><span class="n">6</span><div class="t"><strong>Review and summary</strong><span>Pass topic 5 to unlock</span></div><span class="pill lock">Locked</span></li>
+          <li><span class="n">1</span><div class="t"><strong>Create your account</strong><span>Register as a student or faculty member</span></div></li>
+          <li><span class="n">2</span><div class="t"><strong>Read the lesson</strong><span>Go through text, slides and summaries</span></div></li>
+          <li><span class="n">3</span><div class="t"><strong>Take the quiz</strong><span>Answer a timed quiz to check your understanding</span></div></li>
+          <li><span class="n">4</span><div class="t"><strong>Move on</strong><span>Score 75% or higher to unlock the next lesson</span></div></li>
         </ol>
       </section>
 
       <section id="rules" aria-labelledby="h-rules">
         <h2 id="h-rules">How quizzes work</h2>
         <ul class="rules">
-          <li><b>75%</b>Passing score to unlock the next topic</li>
+          <li><b>75%</b>Passing score to unlock the next lesson</li>
           <li><b>10 min</b>Time limit, up to 20 questions</li>
-          <li><b>Retake</b>Failed a quiz? Repeat the topic, then try again</li>
+          <li><b>Retake</b>Failed a quiz? Review the lesson, then try again</li>
         </ul>
       </section>
     </main>
-
+    
     <aside class="panel" id="login" aria-label="Account">
       <input type="radio" name="tab" id="t-login" checked>
       <input type="radio" name="tab" id="t-reg">
