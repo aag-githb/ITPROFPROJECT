@@ -194,8 +194,9 @@ async function init() {
         const li = document.createElement("li");
         const link = document.createElement("a");
 
-        // file.url already starts with /api, so don't add /api twice.
-        link.href = `https://itclassroom-backend.onrender.com${file.url}`;
+        link.href = file.url.startsWith("http")
+          ? file.url
+          : VIEW_API + file.url.replace(/^\/api/, "");
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.textContent = file.name || "Open presentation";

@@ -40,11 +40,20 @@ app = Flask(
     static_url_path="",
 )
 app.secret_key = os.environ.get("SECRET_KEY", "change-this-to-something-random")
-frontend_url = os.environ.get(
-    "FRONTEND_URL",
-    "https://itprofproject-frontend.vercel.app",
-).rstrip("/")
-cookie_secure = os.environ.get("SESSION_COOKIE_SECURE", "false").lower() == "true"
+frontend_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.environ.get(
+        "FRONTEND_URL",
+        "https://itprofproject-frontend.vercel.app",
+    ).split(",")
+    if origin.strip()
+]
+cookie_secure_setting = os.environ.get("SESSION_COOKIE_SECURE")
+cookie_secure = (
+    cookie_secure_setting.lower() == "true"
+    if cookie_secure_setting is not None
+    else any(origin.startswith("https://") for origin in frontend_origins)
+)
 app.config.update(
     SESSION_COOKIE_SECURE=cookie_secure,
     SESSION_COOKIE_HTTPONLY=True,
@@ -70,7 +79,7 @@ CORS(
     origins=[
         "http://localhost:5500",
         "http://127.0.0.1:5500",
-        frontend_url,
+        *frontend_origins,
     ],
 )
 
