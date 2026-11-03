@@ -10,7 +10,10 @@ import io
 import secrets
 import string
 import hashlib
+import json
 import smtplib
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from email.message import EmailMessage
 from datetime import datetime, timezone
 from pathlib import Path
@@ -123,24 +126,60 @@ SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
 SMTP_SENDER = os.environ.get("SMTP_SENDER", "")
 SMTP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD", "")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
+MAIL_SENDER = os.environ.get("MAIL_SENDER", SMTP_SENDER)
 
 
 def send_verification_email(recipient, token):
-    if not SMTP_SENDER or not SMTP_PASSWORD:
-        raise RuntimeError("Email delivery is not configured")
+    if not BREVO_API_KEY and (not SMTP_SENDER or not SMTP_PASSWORD):
+        raise RuntimeError(
+            "Email delivery is not configured. Set BREVO_API_KEY and MAIL_SENDER."
+        )
     backend_url = (
         os.environ.get("BACKEND_URL", "").strip().rstrip("/")
         or request.host_url.rstrip("/")
     )
-    message = EmailMessage()
-    message["Subject"] = "Verify your ITClassroom email"
-    message["From"] = SMTP_SENDER
-    message["To"] = recipient
-    message.set_content(
+    subject = "Verify your ITClassroom email"
+    content = (
         "Verify your ITClassroom account by opening this link:\n\n"
         f"{backend_url}/api/verify-email/{token}\n\n"
         "This link expires in 24 hours."
     )
+    if BREVO_API_KEY:
+        payload = json.dumps({
+            "sender": {"email": MAIL_SENDER},
+            "to": [{"email": recipient}],
+            "subject": subject,
+            "textContent": content,
+        }).encode("utf-8")
+        brevo_request = Request(
+            "https://api.brevo.com/v3/smtp/email",
+            data=payload,
+            headers={
+                "accept": "application/json",
+                "api-key": BREVO_API_KEY,
+                "content-type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urlopen(brevo_request, timeout=15):
+                return
+        except HTTPError as error:
+            response = error.read().decode("utf-8", errors="replace")
+            raise RuntimeError(
+                f"Brevo rejected the verification email ({error.code}): {response}"
+            ) from error
+        except URLError as error:
+            raise RuntimeError(
+                f"Could not reach Brevo: {error.reason}"
+            ) from error
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = SMTP_SENDER
+    message["To"] = recipient
+    message.set_content(content)
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
         server.starttls()
         server.login(SMTP_SENDER, SMTP_PASSWORD)
