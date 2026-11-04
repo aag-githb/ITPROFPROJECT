@@ -182,6 +182,16 @@
 .delete-confirmation .modal-actions{margin-top:22px}
 .people-columns{display:grid;grid-template-columns:1fr;gap:24px}
 .people-columns h3{color:var(--periwinkle)}
+.inline-form{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.inline-form input{flex:1;min-width:0;padding:10px;border:1px solid #9ca3af;border-radius:8px;font:inherit;color:#111827;background:#fff}
+.inline-form .btn{width:auto;white-space:nowrap}
+.inline-form + .msg{min-height:1.4em}
+.student-search{position:relative;flex:1;min-width:0}
+.student-search input{width:100%;box-sizing:border-box}
+.student-options{position:absolute;z-index:5;top:calc(100% + 4px);left:0;right:0;max-height:220px;overflow:auto;border:1px solid #9ca3af;border-radius:8px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.student-option{display:block;width:100%;padding:10px;border:0;background:#fff;color:#111827;text-align:left;font:inherit;cursor:pointer}
+.student-option:hover,.student-option:focus{background:#e5e7eb}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .people-list{list-style:none;padding:0;margin:0;border-top:1px solid rgba(227,217,252,.2)}
 .people-list li{padding:12px 0;border-bottom:1px solid rgba(227,217,252,.2)}
 .person-row{display:flex;align-items:center;justify-content:space-between;gap:12px}

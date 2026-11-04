@@ -11,6 +11,7 @@ import secrets
 import string
 import hashlib
 import json
+import re
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from datetime import datetime, timezone
@@ -1502,6 +1503,96 @@ def remove_subject_student(subject_id, username):
             })
 
     return jsonify(ok=True), 200
+
+
+@app.post("/api/subjects/<subject_id>/students")
+def add_subject_student(subject_id):
+    if "user" not in session:
+        return jsonify(error="Not logged in"), 401
+
+    user = users.find_one({"username": session["user"]})
+    if not user:
+        session.clear()
+        return jsonify(error="Not logged in"), 401
+    if user.get("role") != "faculty":
+        return jsonify(error="Faculty only"), 403
+
+    try:
+        subject = subjects.find_one({"_id": ObjectId(subject_id)})
+    except Exception:
+        subject = None
+    if not subject:
+        return jsonify(error="Subject not found"), 404
+    if subject.get("created_by") != user["username"]:
+        return jsonify(error="You can only manage your own subjects"), 403
+
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "")
+    if not isinstance(username, str) or not username.strip():
+        return jsonify(error="Student username is required"), 400
+    username = username.strip()
+
+    student = users.find_one({"username": username})
+    if not student:
+        return jsonify(error="No account was found for that username"), 404
+    if student.get("role") != "student":
+        return jsonify(error="Only student accounts can be added"), 400
+
+    result = enrollments.update_one(
+        {"subject_id": subject["_id"], "username": username},
+        {"$setOnInsert": {
+            "subject_id": subject["_id"],
+            "username": username,
+            "enrolled_at": datetime.now(timezone.utc),
+        }},
+        upsert=True,
+    )
+    return jsonify(ok=True, enrolled=True, already_enrolled=not result.upserted_id)
+
+
+@app.get("/api/subjects/<subject_id>/student-options")
+def subject_student_options(subject_id):
+    if "user" not in session:
+        return jsonify(error="Not logged in"), 401
+
+    user = users.find_one({"username": session["user"]})
+    if not user:
+        session.clear()
+        return jsonify(error="Not logged in"), 401
+    if user.get("role") != "faculty":
+        return jsonify(error="Faculty only"), 403
+
+    try:
+        subject = subjects.find_one({"_id": ObjectId(subject_id)})
+    except Exception:
+        subject = None
+    if not subject:
+        return jsonify(error="Subject not found"), 404
+    if subject.get("created_by") != user["username"]:
+        return jsonify(error="You can only manage your own subjects"), 403
+
+    query = request.args.get("q", "").strip()
+    enrolled_usernames = enrollments.distinct(
+        "username", {"subject_id": subject["_id"]}
+    )
+    criteria = {
+        "role": "student",
+        "username": {"$nin": enrolled_usernames},
+    }
+    if query:
+        criteria["username"] = {
+            "$regex": re.escape(query),
+            "$options": "i",
+        }
+
+    students = users.find(
+        criteria,
+        {"_id": 0, "username": 1},
+    ).sort("username", 1).limit(20)
+    return jsonify(students=[
+        {"username": student["username"]}
+        for student in students
+    ])
 
 
 @app.post("/api/logout")

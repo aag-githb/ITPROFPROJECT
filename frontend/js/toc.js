@@ -21,6 +21,9 @@ const deleteSubjectButton = document.getElementById("delete-subject");
 const subjectEditModal = document.getElementById("subject-edit-modal");
 const subjectEditForm = document.getElementById("subject-edit-form");
 const subjectEditMessage = document.getElementById("subject-edit-msg");
+const addStudentForm = document.getElementById("add-student-form");
+const studentSearch = document.getElementById("student-username");
+const studentOptions = document.getElementById("student-options");
 
 let currentRole = "";
 let currentSubject = null;
@@ -84,6 +87,75 @@ async function loadPeople() {
     render(result.body.students || [], studentList, "No students enrolled yet.");
   } catch (error) {
     peopleMsg.textContent = error.message;
+  }
+}
+
+async function addStudent(event) {
+  event.preventDefault();
+  const message = document.getElementById("add-student-msg");
+  const button = addStudentForm.querySelector('[type="submit"]');
+  const username = addStudentForm.elements.username.value.trim();
+  message.textContent = "";
+  button.disabled = true;
+
+  try {
+    const result = await api(
+      `/subjects/${encodeURIComponent(subjectId)}/students`,
+      { username }
+    );
+    if (!result.ok) {
+      throw new Error(result.body?.error || "Unable to add student.");
+    }
+    addStudentForm.reset();
+    message.textContent = result.body.already_enrolled
+      ? "Student is already enrolled."
+      : "Student added successfully.";
+    await loadPeople();
+  } catch (error) {
+    message.textContent = error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function closeStudentOptions() {
+  studentOptions.replaceChildren();
+  studentOptions.hidden = true;
+  studentSearch.setAttribute("aria-expanded", "false");
+}
+
+async function searchStudents() {
+  const query = studentSearch.value.trim();
+  if (!query) {
+    closeStudentOptions();
+    return;
+  }
+
+  try {
+    const result = await api(
+      `/subjects/${encodeURIComponent(subjectId)}/student-options?q=${encodeURIComponent(query)}`
+    );
+    if (!result.ok) {
+      throw new Error(result.body?.error || "Unable to search students.");
+    }
+
+    studentOptions.replaceChildren();
+    (result.body.students || []).forEach(student => {
+      const option = el("button", student.username, "student-option");
+      option.type = "button";
+      option.setAttribute("role", "option");
+      option.addEventListener("click", () => {
+        studentSearch.value = student.username;
+        closeStudentOptions();
+        studentSearch.focus();
+      });
+      studentOptions.append(option);
+    });
+    studentOptions.hidden = studentOptions.childElementCount === 0;
+    studentSearch.setAttribute("aria-expanded", String(!studentOptions.hidden));
+  } catch (error) {
+    closeStudentOptions();
+    document.getElementById("add-student-msg").textContent = error.message;
   }
 }
 
@@ -326,6 +398,9 @@ async function initializePage() {
     const user = result.body;
     currentRole = String(user.role || "").trim().toLowerCase();
     document.getElementById("save-subject-toc").hidden = currentRole !== "faculty";
+    if (addStudentForm) {
+      addStudentForm.hidden = currentRole !== "faculty";
+    }
 
     // Show the entire Add a Topic section to faculty only.
     if (addBox) {
@@ -404,6 +479,12 @@ document.getElementById("cancel-subject-edit")?.addEventListener(
   "click",
   () => subjectEditModal.close()
 );
+addStudentForm?.addEventListener("submit", addStudent);
+studentSearch?.addEventListener("input", searchStudents);
+studentSearch?.addEventListener("focus", searchStudents);
+document.addEventListener("click", event => {
+  if (!event.target.closest(".student-search")) closeStudentOptions();
+});
 
 if (form) {
   form.addEventListener("submit", async (event) => {

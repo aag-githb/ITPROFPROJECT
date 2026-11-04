@@ -67,6 +67,15 @@
         </div>
         <div>
           <h3>Students</h3>
+          <form id="add-student-form" class="inline-form">
+            <label class="sr-only" for="student-username">Student username</label>
+            <div class="student-search">
+              <input id="student-username" name="username" placeholder="Search students by username" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="student-options">
+              <div id="student-options" class="student-options" role="listbox" hidden></div>
+            </div>
+            <button class="btn" type="submit">Add student</button>
+          </form>
+          <p class="msg" id="add-student-msg" role="alert"></p>
           <ul id="student-list" class="people-list"></ul>
         </div>
       </div>
