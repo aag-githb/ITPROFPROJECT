@@ -1,5 +1,5 @@
 
-from flask import request, session, jsonify, redirect
+from flask import request, session, jsonify, redirect, send_from_directory
 from bson import ObjectId
 import cloudinary
 import cloudinary.uploader
@@ -7,6 +7,7 @@ import cloudinary.utils
 from cloudinary.exceptions import Error as CloudinaryError
 from werkzeug.utils import secure_filename
 from functools import wraps
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import csv
 import io
@@ -14,6 +15,7 @@ import os
 import re
 import uuid
 
+UPLOAD_DIR = Path(__file__).parent / "uploads" / "presentations"
 ALLOWED_EXTENSIONS = {"pdf", "ppt", "pptx"}
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 
@@ -27,6 +29,7 @@ def init_topics(app, db):
     attempts = db["quiz_attempts"]
     progress = db["student_progress"]
 
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     cloudinary_url = os.environ.get("CLOUDINARY_URL")
     if cloudinary_url:
         cloudinary.config(cloudinary_url=cloudinary_url, secure=True)
@@ -46,7 +49,12 @@ def init_topics(app, db):
         public_id = presentation.get("cloudinary_public_id")
         version = presentation.get("cloudinary_version")
         if not public_id:
-            return ""
+            filename = presentation.get("filename")
+            return (
+                f"/api/topics/{presentation.get('topic_id')}/presentations/{filename}"
+                if filename
+                else ""
+            )
 
         url, _ = cloudinary.utils.cloudinary_url(
             public_id,
@@ -784,6 +792,10 @@ def init_topics(app, db):
                     app.logger.error(
                         "Cloudinary presentation deletion failed: %s", error
                     )
+            else:
+                filename = presentation.get("filename", "")
+                if re.fullmatch(r"[a-f0-9]+\.(pdf|ppt|pptx)", filename):
+                    (UPLOAD_DIR / filename).unlink(missing_ok=True)
 
         progress.delete_many({"topic_id": topic["_id"]})
         topics.delete_one({"_id": topic["_id"]})
@@ -816,37 +828,44 @@ def init_topics(app, db):
         if size > MAX_UPLOAD_BYTES:
             return jsonify(error="File must be 25 MB or smaller"), 413
 
-        if not cloudinary_ready():
-            return jsonify(
-                error="File storage is not configured on the server"
-            ), 503
+        presentation_id = uuid.uuid4().hex
+        if cloudinary_ready():
+            public_id = f"presentations/{presentation_id}.{extension}"
+            try:
+                upload_result = cloudinary.uploader.upload(
+                    file.stream,
+                    resource_type="raw",
+                    public_id=public_id,
+                    overwrite=False,
+                )
+            except CloudinaryError as error:
+                app.logger.error("Cloudinary presentation upload failed: %s", error)
+                return jsonify(error="File could not be uploaded"), 502
 
-        public_id = f"presentations/{uuid.uuid4().hex}.{extension}"
-        try:
-            upload_result = cloudinary.uploader.upload(
-                file.stream,
-                resource_type="raw",
-                public_id=public_id,
-                overwrite=False,
-            )
-        except CloudinaryError as error:
-            app.logger.error("Cloudinary presentation upload failed: %s", error)
-            return jsonify(error="File could not be uploaded"), 502
+            secure_url = upload_result.get("secure_url")
+            if not secure_url:
+                app.logger.error("Cloudinary upload returned no secure URL")
+                return jsonify(error="File storage did not return a usable URL"), 502
 
-        secure_url = upload_result.get("secure_url")
-        if not secure_url:
-            app.logger.error("Cloudinary upload returned no secure URL")
-            return jsonify(error="File storage did not return a usable URL"), 502
-
-        presentation = {
-            "id": uuid.uuid4().hex,
-            "name": original_name,
-            "size": size,
-            "url": secure_url,
-            "cloudinary_public_id": upload_result.get("public_id", public_id),
-            "cloudinary_version": upload_result.get("version"),
-            "cloudinary_resource_type": "raw",
-        }
+            presentation = {
+                "id": presentation_id,
+                "name": original_name,
+                "size": size,
+                "url": secure_url,
+                "cloudinary_public_id": upload_result.get("public_id", public_id),
+                "cloudinary_version": upload_result.get("version"),
+                "cloudinary_resource_type": "raw",
+            }
+        else:
+            filename = f"{presentation_id}.{extension}"
+            file.save(UPLOAD_DIR / filename)
+            presentation = {
+                "id": presentation_id,
+                "name": original_name,
+                "size": size,
+                "filename": filename,
+                "topic_id": str(topic["_id"]),
+            }
 
         topics.update_one(
             {"_id": topic["_id"]},
@@ -874,6 +893,8 @@ def init_topics(app, db):
         url = cloudinary_presentation_url(presentation)
         if not url:
             return jsonify(error="Presentation is not available"), 404
+        if not presentation.get("cloudinary_public_id"):
+            return send_from_directory(UPLOAD_DIR, presentation["filename"])
         return redirect(url, code=302)
 
     @app.delete("/api/topics/<topic_id>/presentations/<presentation_id>")
@@ -900,6 +921,10 @@ def init_topics(app, db):
                     "Cloudinary presentation deletion failed: %s", error
                 )
                 return jsonify(error="File could not be removed"), 502
+        else:
+            filename = presentation.get("filename", "")
+            if re.fullmatch(r"[a-f0-9]+\.(pdf|ppt|pptx)", filename):
+                (UPLOAD_DIR / filename).unlink(missing_ok=True)
 
         topics.update_one(
             {"_id": topic["_id"]},
